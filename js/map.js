@@ -309,4 +309,93 @@ function getAddress(elem) {
   return {x: x, y: y};
 }
 
+/*
+MODULE4 - TASK2
+*/
+var title = adForm.querySelector('#title');
+var price = adForm.querySelector('#price');
+var selectType = adForm.querySelector('#type');
+var selectTimeIn = adForm.querySelector('#timein');
+var selectTimeOut = adForm.querySelector('#timeout');
+var selectRoomNumber = adForm.querySelector('#room_number');
+var selectCapacity = adForm.querySelector('#capacity');
+var submitBtn = adForm.querySelector('.ad-form__submit');
+var priceOfType = {
+  'bungalo': 0,
+  'flat': 1000,
+  'house': 5000,
+  'palace': 10000
+};
+
+setMinPrice(priceOfType);
+
+submitBtn.addEventListener('click', onClickSubmit);
+selectTimeIn.addEventListener('click', onClickSelectTime);
+selectTimeOut.addEventListener('change', onClickSelectTime);
+selectType.addEventListener('click', onClickSelectType);
+
+function onInput(evt) {
+  markInvalidFields(evt);
+}
+
+function onClickSelectType() {
+  setMinPrice(priceOfType);
+}
+
+function onClickSelectTime(evt) {
+  setTimeInOut(evt);
+}
+
+function onClickSubmit(evt) {
+  checkCapacity();
+  markInvalidFields(evt);
+  title.addEventListener('change', onInput);
+  price.addEventListener('change', onInput);
+  selectCapacity.addEventListener('click', onClickSelectCapacity);
+}
+
+function onClickSelectCapacity(evt) {
+  checkCapacity();
+  markInvalidFields(evt);
+}
+
+function checkCapacity() {
+  var capacity = +selectCapacity.value;
+  var roomNumber = +selectRoomNumber.value;
+  if (roomNumber !== 100 && (capacity > roomNumber || capacity < 1)) {
+    var message = 'Количество гостей НЕ должно быть больше ' + roomNumber + ' и меньше 1';
+  } else if (roomNumber === 100 && capacity !== 0) {
+    message = 'Поставьте пункт \<не для гостей\> в поле <Количество мест>';
+  } else {
+    message = '';
+  }
+  selectCapacity.setCustomValidity(message);
+}
+
+function setTimeInOut(evt) {
+  var selectTimeId = evt.target.id;
+  var time = evt.target.value;
+  var timeField = selectTimeOut;
+  if (selectTimeId === 'timeout') {
+    timeField = selectTimeIn;
+  }
+  timeField.value = time;
+}
+
+function setMinPrice(obj) {
+  var typeValue = selectType.value;
+  price.min = obj[typeValue];
+  price.placeholder = obj[typeValue];
+}
+
+function markInvalidFields(evt) {
+  var invalidFields = adForm.querySelectorAll('fieldset > :invalid');
+  var validElem = evt.target;
+  for (var i = 0; i < invalidFields.length; i++) {
+    invalidFields[i].style.borderColor = 'red';
+  }
+  if (validElem.validity.valid) {
+    validElem.style.borderColor = '#d9d9d3';
+  }
+}
 
