@@ -312,58 +312,54 @@ function getAddress(elem) {
 /*
 MODULE4 - TASK2
 */
-var title = adForm.querySelector('#title');
 var price = adForm.querySelector('#price');
 var selectType = adForm.querySelector('#type');
 var selectTimeIn = adForm.querySelector('#timein');
 var selectTimeOut = adForm.querySelector('#timeout');
-var selectRoomNumber = adForm.querySelector('#room_number');
+var selectRoom = adForm.querySelector('#room_number');
 var selectCapacity = adForm.querySelector('#capacity');
-var submitBtn = adForm.querySelector('.ad-form__submit');
-var priceOfType = {
+var submit = adForm.querySelector('.ad-form__submit');
+var fieldsets = adForm.querySelectorAll('fieldset > input, select');
+var PriceOfType = {
   'bungalo': 0,
   'flat': 1000,
   'house': 5000,
   'palace': 10000
 };
 
-setMinPrice(priceOfType);
+setMinPrice(selectType.value);
 
-submitBtn.addEventListener('click', onClickSubmit);
-selectTimeIn.addEventListener('click', onClickSelectTime);
-selectTimeOut.addEventListener('change', onClickSelectTime);
-selectType.addEventListener('click', onClickSelectType);
+adForm.addEventListener('input', onElementInput);
+submit.addEventListener('click', onSubmitClick);
+selectTimeIn.addEventListener('change', onSelectTimeChange);
+selectTimeOut.addEventListener('change', onSelectTimeChange);
+selectType.addEventListener('change', onSelectTypeChange);
 
-function onInput(evt) {
-  markInvalidFields(evt);
+function onElementInput(evt) {
+  var field = evt.target;
+  unMarkValidFields(field);
 }
 
-function onClickSelectType() {
-  setMinPrice(priceOfType);
+function onSelectTypeChange() {
+  setMinPrice(selectType.value);
 }
 
-function onClickSelectTime(evt) {
-  setTimeInOut(evt);
+function onSelectTimeChange(evt) {
+  var newSelect = evt.target;
+  setTimeInOut(newSelect);
 }
 
-function onClickSubmit(evt) {
+function onSubmitClick() {
   checkCapacity();
-  markInvalidFields(evt);
-  title.addEventListener('change', onInput);
-  price.addEventListener('change', onInput);
-  selectCapacity.addEventListener('click', onClickSelectCapacity);
-}
-
-function onClickSelectCapacity(evt) {
-  checkCapacity();
-  markInvalidFields(evt);
+  markInvalidFields();
 }
 
 function checkCapacity() {
   var capacity = +selectCapacity.value;
-  var roomNumber = +selectRoomNumber.value;
+  var roomNumber = +selectRoom.value;
+  var message = null;
   if (roomNumber !== 100 && (capacity > roomNumber || capacity < 1)) {
-    var message = 'Количество гостей НЕ должно быть больше ' + roomNumber + ' и меньше 1';
+    message = 'Количество гостей НЕ должно быть больше ' + roomNumber + ' и меньше 1';
   } else if (roomNumber === 100 && capacity !== 0) {
     message = 'Поставьте пункт \<не для гостей\> в поле <Количество мест>';
   } else {
@@ -372,30 +368,28 @@ function checkCapacity() {
   selectCapacity.setCustomValidity(message);
 }
 
-function setTimeInOut(evt) {
-  var selectTimeId = evt.target.id;
-  var time = evt.target.value;
-  var timeField = selectTimeOut;
-  if (selectTimeId === 'timeout') {
-    timeField = selectTimeIn;
-  }
-  timeField.value = time;
+function setTimeInOut(newSelect) {
+  selectTimeIn.value = newSelect.value;
+  selectTimeOut.value = newSelect.value;
 }
 
-function setMinPrice(obj) {
-  var typeValue = selectType.value;
-  price.min = obj[typeValue];
-  price.placeholder = obj[typeValue];
+function setMinPrice(typeValue) {
+  price.min = PriceOfType[typeValue];
+  price.placeholder = PriceOfType[typeValue];
 }
 
-function markInvalidFields(evt) {
-  var invalidFields = adForm.querySelectorAll('fieldset > :invalid');
-  var validElem = evt.target;
-  for (var i = 0; i < invalidFields.length; i++) {
-    invalidFields[i].style.borderColor = 'red';
-  }
-  if (validElem.validity.valid) {
-    validElem.style.borderColor = '#d9d9d3';
+function unMarkValidFields(field) {
+  var hasFieldRemovedClass = field.classList.contains('field-invalid');
+  if (hasFieldRemovedClass) {
+    field.classList.remove('field-invalid');
   }
 }
 
+function markInvalidFields() {
+  for (var i = 0; i < fieldsets.length; i++) {
+    var fieldset = fieldsets[i];
+    if (!fieldset.validity.valid) {
+      fieldset.classList.add('field-invalid');
+    }
+  }
+}
