@@ -217,7 +217,7 @@ function openCard(obj) {
   var newNotice = createNoticeElement(obj);
   map.appendChild(newNotice);
   var popupClose = map.querySelector('.popup__close');
-  popupClose.addEventListener('click', onClickCloseOffer);
+  popupClose.addEventListener('click', onCloseOfferClick);
   document.addEventListener('keydown', onOfferEscPress);
 }
 
@@ -237,11 +237,11 @@ var firstCoords = getAddress(mapPinMain);
 changeAvailabilityFields(filterFormItems);
 changeAvailabilityFields(adFormFieldSets);
 setAddress(firstCoords);
+toggleEventPinMain();
 
-map.addEventListener('click', onClickPin);
-mapPinMain.addEventListener('mouseup', onClickMainPin);
+map.addEventListener('click', onPinClick);
 
-function onClickPin(evt) {
+function onPinClick(evt) {
   var pin = evt.target.closest('.map__pin:not(.map__pin--main)');
   if (pin) {
     var id = pin.dataset.id;
@@ -251,15 +251,7 @@ function onClickPin(evt) {
   }
 }
 
-function closeCard() {
-  var card = map.querySelector('.map__card');
-  if (card) {
-    card.remove();
-  }
-  document.removeEventListener('keydown', onOfferEscPress);
-}
-
-function onClickCloseOffer() {
+function onCloseOfferClick() {
   closeCard();
 }
 
@@ -267,6 +259,31 @@ function onOfferEscPress(evt) {
   if (evt.which === ESC_KEYCODE) {
     closeCard();
   }
+}
+
+function onPinMainMouseUp() {
+  activatePage();
+  addPins(offers);
+  changeAvailabilityFields(adFormFieldSets);
+  changeAvailabilityFields(filterFormItems);
+  var disabledAddressCoords = getAddress(mapPinMain);
+  setAddress(disabledAddressCoords);
+  mapPinMain.removeEventListener('mouseup', onPinMainMouseUp);
+  document.removeEventListener('mousemove', onDocumentMouseMove);
+}
+
+function toggleEventPinMain() {
+  if (isMapDisabled()) {
+    mapPinMain.addEventListener('mouseup', onPinMainMouseUp);
+  }
+}
+
+function closeCard() {
+  var card = map.querySelector('.map__card');
+  if (card) {
+    card.remove();
+  }
+  document.removeEventListener('keydown', onOfferEscPress);
 }
 
 function changeAvailabilityFields(formFields) {
@@ -283,15 +300,6 @@ function isMapDisabled() {
 function activatePage() {
   map.classList.remove('map--faded');
   adForm.classList.remove('ad-form--disabled');
-}
-
-function onClickMainPin() {
-  activatePage();
-  addPins(offers);
-  changeAvailabilityFields(adFormFieldSets);
-  changeAvailabilityFields(filterFormItems);
-  var addressCoords = getAddress(mapPinMain);
-  setAddress(addressCoords);
 }
 
 function setAddress(coords) {
@@ -392,4 +400,74 @@ function markInvalidFields() {
       fieldset.classList.add('field-invalid');
     }
   }
+}
+
+/*
+MODULE5 - TASK1
+*/
+var startCoords = {};
+
+mapPinMain.addEventListener('mousedown', onPinMainMouseDown);
+
+function onPinMainMouseDown(evt) {
+  document.addEventListener('mousemove', onDocumentMouseMove);
+  if (!isMapDisabled()) {
+    document.addEventListener('mouseup', onDocumentMouseUp);
+  }
+  startCoords = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+}
+
+function onDocumentMouseMove(evt) {
+  var moveCoords = {
+    moveX: evt.clientX,
+    moveY: evt.clientY
+  };
+  calculateNewCoords(moveCoords);
+}
+
+function onDocumentMouseUp() {
+  var addressCoords = getAddress(mapPinMain);
+  setAddress(addressCoords);
+  document.removeEventListener('mouseup', onDocumentMouseUp);
+  document.removeEventListener('mousemove', onDocumentMouseMove);
+}
+
+function calculateNewCoords(coords) {
+  var coordsShift = {
+    x: startCoords.x - coords.moveX,
+    y: startCoords.y - coords.moveY
+  };
+  startCoords = {
+    x: coords.moveX,
+    y: coords.moveY
+  };
+  setOffsetPinMain(coordsShift);
+}
+
+function setOffsetPinMain(objShift) {
+  var pinX = mapPinMain.offsetLeft;
+  var pinY = mapPinMain.offsetTop;
+  var strPinX = null;
+  var strPinY = null;
+  if (pinX < 1) {
+    strPinX = 1 + 'px';
+    strPinY = pinY + 'px';
+  } else if (pinX > 1135) {
+    strPinX = 1135 + 'px';
+    strPinY = pinY + 'px';
+  } else if (pinY < 130) {
+    strPinY = 130 + 'px';
+    strPinX = pinX + 'px';
+  } else if (pinY > 630) {
+    strPinY = 630 + 'px';
+    strPinX = pinX + 'px';
+  } else {
+    strPinX = (pinX - objShift.x) + 'px';
+    strPinY = (pinY - objShift.y) + 'px';
+  }
+  mapPinMain.style.left = strPinX;
+  mapPinMain.style.top = strPinY;
 }
