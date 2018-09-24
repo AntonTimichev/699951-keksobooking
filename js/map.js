@@ -237,9 +237,9 @@ var firstCoords = getAddress(mapPinMain);
 changeAvailabilityFields(filterFormItems);
 changeAvailabilityFields(adFormFieldSets);
 setAddress(firstCoords);
-toggleEventPinMain();
 
 map.addEventListener('click', onPinClick);
+mapPinMain.addEventListener('mouseup', onPinMainMouseUp);
 
 function onPinClick(evt) {
   var pin = evt.target.closest('.map__pin:not(.map__pin--main)');
@@ -270,12 +270,6 @@ function onPinMainMouseUp() {
   setAddress(disabledAddressCoords);
   mapPinMain.removeEventListener('mouseup', onPinMainMouseUp);
   document.removeEventListener('mousemove', onDocumentMouseMove);
-}
-
-function toggleEventPinMain() {
-  if (isMapDisabled()) {
-    mapPinMain.addEventListener('mouseup', onPinMainMouseUp);
-  }
 }
 
 function closeCard() {
@@ -406,14 +400,16 @@ function markInvalidFields() {
 MODULE5 - TASK1
 */
 var startCoords = {};
-
+var limits = {
+  top: 130,
+  left: 1,
+  right: 1135,
+  bottom: 630
+};
 mapPinMain.addEventListener('mousedown', onPinMainMouseDown);
 
 function onPinMainMouseDown(evt) {
   document.addEventListener('mousemove', onDocumentMouseMove);
-  if (!isMapDisabled()) {
-    document.addEventListener('mouseup', onDocumentMouseUp);
-  }
   startCoords = {
     x: evt.clientX,
     y: evt.clientY
@@ -421,11 +417,17 @@ function onPinMainMouseDown(evt) {
 }
 
 function onDocumentMouseMove(evt) {
-  var moveCoords = {
-    moveX: evt.clientX,
-    moveY: evt.clientY
+  var shift = {
+    x: startCoords.x - evt.clientX,
+    y: startCoords.y - evt.clientY
   };
-  calculateNewCoords(moveCoords);
+  startCoords = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+  var newCoords = calculateNewCoords(shift);
+  setCoords(newCoords);
+  document.addEventListener('mouseup', onDocumentMouseUp);
 }
 
 function onDocumentMouseUp() {
@@ -435,39 +437,28 @@ function onDocumentMouseUp() {
   document.removeEventListener('mousemove', onDocumentMouseMove);
 }
 
-function calculateNewCoords(coords) {
-  var coordsShift = {
-    x: startCoords.x - coords.moveX,
-    y: startCoords.y - coords.moveY
+function calculateNewCoords(shift) {
+  var newCoords = {
+    x: mapPinMain.offsetLeft - shift.x,
+    y: mapPinMain.offsetTop - shift.y
   };
-  startCoords = {
-    x: coords.moveX,
-    y: coords.moveY
-  };
-  setOffsetPinMain(coordsShift);
+  if (newCoords.x > limits.right) {
+    newCoords.x = limits.right;
+  }
+  if (newCoords.x < limits.left) {
+    newCoords.x = limits.left;
+  }
+  if (newCoords.y > limits.bottom) {
+    newCoords.y = limits.bottom;
+  }
+  if (newCoords.y < limits.top) {
+    newCoords.y = limits.top;
+  }
+  return newCoords;
 }
 
-function setOffsetPinMain(objShift) {
-  var pinX = mapPinMain.offsetLeft;
-  var pinY = mapPinMain.offsetTop;
-  var strPinX = null;
-  var strPinY = null;
-  if (pinX < 1) {
-    strPinX = 1 + 'px';
-    strPinY = pinY + 'px';
-  } else if (pinX > 1135) {
-    strPinX = 1135 + 'px';
-    strPinY = pinY + 'px';
-  } else if (pinY < 130) {
-    strPinY = 130 + 'px';
-    strPinX = pinX + 'px';
-  } else if (pinY > 630) {
-    strPinY = 630 + 'px';
-    strPinX = pinX + 'px';
-  } else {
-    strPinX = (pinX - objShift.x) + 'px';
-    strPinY = (pinY - objShift.y) + 'px';
-  }
-  mapPinMain.style.left = strPinX;
-  mapPinMain.style.top = strPinY;
+function setCoords(coords) {
+  mapPinMain.style.left = coords.x + 'px';
+  mapPinMain.style.top = coords.y + 'px';
 }
+
