@@ -217,7 +217,7 @@ function openCard(obj) {
   var newNotice = createNoticeElement(obj);
   map.appendChild(newNotice);
   var popupClose = map.querySelector('.popup__close');
-  popupClose.addEventListener('click', onClickCloseOffer);
+  popupClose.addEventListener('click', onCloseOfferClick);
   document.addEventListener('keydown', onOfferEscPress);
 }
 
@@ -238,10 +238,10 @@ changeAvailabilityFields(filterFormItems);
 changeAvailabilityFields(adFormFieldSets);
 setAddress(firstCoords);
 
-map.addEventListener('click', onClickPin);
-mapPinMain.addEventListener('mouseup', onClickMainPin);
+map.addEventListener('click', onPinClick);
+mapPinMain.addEventListener('mouseup', onPinMainMouseUp);
 
-function onClickPin(evt) {
+function onPinClick(evt) {
   var pin = evt.target.closest('.map__pin:not(.map__pin--main)');
   if (pin) {
     var id = pin.dataset.id;
@@ -251,15 +251,7 @@ function onClickPin(evt) {
   }
 }
 
-function closeCard() {
-  var card = map.querySelector('.map__card');
-  if (card) {
-    card.remove();
-  }
-  document.removeEventListener('keydown', onOfferEscPress);
-}
-
-function onClickCloseOffer() {
+function onCloseOfferClick() {
   closeCard();
 }
 
@@ -267,6 +259,25 @@ function onOfferEscPress(evt) {
   if (evt.which === ESC_KEYCODE) {
     closeCard();
   }
+}
+
+function onPinMainMouseUp() {
+  activatePage();
+  addPins(offers);
+  changeAvailabilityFields(adFormFieldSets);
+  changeAvailabilityFields(filterFormItems);
+  var disabledAddressCoords = getAddress(mapPinMain);
+  setAddress(disabledAddressCoords);
+  mapPinMain.removeEventListener('mouseup', onPinMainMouseUp);
+  document.removeEventListener('mousemove', onDocumentMouseMove);
+}
+
+function closeCard() {
+  var card = map.querySelector('.map__card');
+  if (card) {
+    card.remove();
+  }
+  document.removeEventListener('keydown', onOfferEscPress);
 }
 
 function changeAvailabilityFields(formFields) {
@@ -283,15 +294,6 @@ function isMapDisabled() {
 function activatePage() {
   map.classList.remove('map--faded');
   adForm.classList.remove('ad-form--disabled');
-}
-
-function onClickMainPin() {
-  activatePage();
-  addPins(offers);
-  changeAvailabilityFields(adFormFieldSets);
-  changeAvailabilityFields(filterFormItems);
-  var addressCoords = getAddress(mapPinMain);
-  setAddress(addressCoords);
 }
 
 function setAddress(coords) {
@@ -393,3 +395,70 @@ function markInvalidFields() {
     }
   }
 }
+
+/*
+MODULE5 - TASK1
+*/
+var startCoords = {};
+var limits = {
+  top: 130,
+  left: 1,
+  right: 1135,
+  bottom: 630
+};
+mapPinMain.addEventListener('mousedown', onPinMainMouseDown);
+
+function onPinMainMouseDown(evt) {
+  document.addEventListener('mousemove', onDocumentMouseMove);
+  startCoords = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+}
+
+function onDocumentMouseMove(evt) {
+  var shift = {
+    x: startCoords.x - evt.clientX,
+    y: startCoords.y - evt.clientY
+  };
+  startCoords = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+  var newCoords = calculateNewCoords(shift);
+  setCoords(newCoords);
+  document.addEventListener('mouseup', onDocumentMouseUp);
+}
+
+function onDocumentMouseUp() {
+  var addressCoords = getAddress(mapPinMain);
+  setAddress(addressCoords);
+  document.removeEventListener('mouseup', onDocumentMouseUp);
+  document.removeEventListener('mousemove', onDocumentMouseMove);
+}
+
+function calculateNewCoords(shift) {
+  var newCoords = {
+    x: mapPinMain.offsetLeft - shift.x,
+    y: mapPinMain.offsetTop - shift.y
+  };
+  if (newCoords.x > limits.right) {
+    newCoords.x = limits.right;
+  }
+  if (newCoords.x < limits.left) {
+    newCoords.x = limits.left;
+  }
+  if (newCoords.y > limits.bottom) {
+    newCoords.y = limits.bottom;
+  }
+  if (newCoords.y < limits.top) {
+    newCoords.y = limits.top;
+  }
+  return newCoords;
+}
+
+function setCoords(coords) {
+  mapPinMain.style.left = coords.x + 'px';
+  mapPinMain.style.top = coords.y + 'px';
+}
+
