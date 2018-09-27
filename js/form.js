@@ -1,15 +1,18 @@
 'use strict';
 
 (function () {
-  /* MODULE4 - TASK2 */
-  var price = window.map.adForm.querySelector('#price');
-  var selectType = window.map.adForm.querySelector('#type');
-  var selectTimeIn = window.map.adForm.querySelector('#timein');
-  var selectTimeOut = window.map.adForm.querySelector('#timeout');
-  var selectRoom = window.map.adForm.querySelector('#room_number');
-  var selectCapacity = window.map.adForm.querySelector('#capacity');
-  var submit = window.map.adForm.querySelector('.ad-form__submit');
-  var fieldsets = window.map.adForm.querySelectorAll('fieldset > input, select');
+  var filterFormItems = document.querySelectorAll('.map__filters > *');
+  var adForm = document.querySelector('.ad-form');
+  var adFormFieldSets = adForm.querySelectorAll('fieldset');
+  var address = adForm.querySelector('#address');
+  var price = adForm.querySelector('#price');
+  var selectType = adForm.querySelector('#type');
+  var selectTimeIn = adForm.querySelector('#timein');
+  var selectTimeOut = adForm.querySelector('#timeout');
+  var selectRoom = adForm.querySelector('#room_number');
+  var selectCapacity = adForm.querySelector('#capacity');
+  var submit = adForm.querySelector('.ad-form__submit');
+  var fields = adForm.querySelectorAll('fieldset > input, select');
   var PriceOfType = {
     'bungalo': 0,
     'flat': 1000,
@@ -18,8 +21,10 @@
   };
 
   setMinPrice(selectType.value);
+  changeAvailabilityFields(filterFormItems);
+  changeAvailabilityFields(adFormFieldSets);
 
-  window.map.adForm.addEventListener('input', onElementInput);
+  adForm.addEventListener('input', onElementInput);
   submit.addEventListener('click', onSubmitClick);
   selectTimeIn.addEventListener('change', onSelectTimeChange);
   selectTimeOut.addEventListener('change', onSelectTimeChange);
@@ -76,78 +81,33 @@
   }
 
   function markInvalidFields() {
-    for (var i = 0; i < fieldsets.length; i++) {
-      var fieldset = fieldsets[i];
-      if (!fieldset.validity.valid) {
-        fieldset.classList.add('field-invalid');
+    for (var i = 0; i < fields.length; i++) {
+      var field = fields[i];
+      if (!field.validity.valid) {
+        field.classList.add('field-invalid');
       }
     }
   }
 
-  /* MODULE5 - TASK1 */
-  var startCoords = {};
-  var limits = {
-    top: 130,
-    left: 1,
-    right: 1135,
-    bottom: 630
-  };
-  window.map.mapPinMain.addEventListener('mousedown', onPinMainMouseDown);
-
-  function onPinMainMouseDown(evt) {
-    document.addEventListener('mousemove', onDocumentMouseMove);
-    startCoords = {
-      x: evt.clientX,
-      y: evt.clientY
-    };
+  function setAddress(coords) {
+    address.value = coords.x + ', ' + coords.y;
   }
 
-  function onDocumentMouseMove(evt) {
-    var shift = {
-      x: startCoords.x - evt.clientX,
-      y: startCoords.y - evt.clientY
-    };
-    startCoords = {
-      x: evt.clientX,
-      y: evt.clientY
-    };
-    var newCoords = calculateNewCoords(shift);
-    setCoords(newCoords);
-    document.addEventListener('mouseup', onDocumentMouseUp);
+  function isFormDisabled() {
+    return adForm.classList.contains('ad-form--disabled');
   }
 
-  function onDocumentMouseUp() {
-    var addressCoords = window.map.getAddress(window.map.mapPinMain);
-    window.map.setAddress(addressCoords);
-    document.removeEventListener('mouseup', onDocumentMouseUp);
-    document.removeEventListener('mousemove', onDocumentMouseMove);
-  }
-
-  function calculateNewCoords(shift) {
-    var newCoords = {
-      x: window.map.mapPinMain.offsetLeft - shift.x,
-      y: window.map.mapPinMain.offsetTop - shift.y
-    };
-    if (newCoords.x > limits.right) {
-      newCoords.x = limits.right;
+  function changeAvailabilityFields(formFields) {
+    var disable = isFormDisabled();
+    for (var i = 0; i < formFields.length; i++) {
+      formFields[i].disabled = disable;
     }
-    if (newCoords.x < limits.left) {
-      newCoords.x = limits.left;
-    }
-    if (newCoords.y > limits.bottom) {
-      newCoords.y = limits.bottom;
-    }
-    if (newCoords.y < limits.top) {
-      newCoords.y = limits.top;
-    }
-    return newCoords;
-  }
-
-  function setCoords(coords) {
-    window.map.mapPinMain.style.left = coords.x + 'px';
-    window.map.mapPinMain.style.top = coords.y + 'px';
   }
   window.form = {
-    onDocumentMouseMove: onDocumentMouseMove
+    adForm: adForm,
+    adFormFieldSets: adFormFieldSets,
+    filterFormItems: filterFormItems,
+    setAddress: setAddress,
+    changeAvailabilityFields: changeAvailabilityFields
   };
 })();

@@ -1,8 +1,7 @@
 'use strict';
 
 (function () {
-  /* СОЗДАНИЕ ОБЪЯВЛЕНИЯ */
-  var map = document.querySelector('.map');
+  var ESC_KEYCODE = 27;
   var templateCard = document.querySelector('#card').content.querySelector('.map__card');
 
   function getFragmentFeatures(array) {
@@ -86,15 +85,33 @@
     return cardElement;
   }
 
-  function openCard(obj) {
+  function openCard(obj, container) {
     var newNotice = createNoticeElement(obj);
-    map.appendChild(newNotice);
-    var popupClose = map.querySelector('.popup__close');
-    popupClose.addEventListener('click', window.map.onCloseOfferClick);
-    document.addEventListener('keydown', window.map.onOfferEscPress);
+    container.appendChild(newNotice);
+    var popupClose = container.querySelector('.popup__close');
+    popupClose.addEventListener('click', onCloseOfferClick);
+    document.addEventListener('keydown', onOfferEscPress);
+  }
+
+  function onCloseOfferClick() {
+    closeCard();
+  }
+
+  function onOfferEscPress(evt) {
+    if (evt.which === ESC_KEYCODE) {
+      closeCard();
+    }
+  }
+
+  function closeCard() {
+    var card = window.map.map.querySelector('.map__card');
+    if (card) {
+      card.remove();
+    }
+    document.removeEventListener('keydown', onOfferEscPress);
   }
   window.card = {
-    map: map,
-    openCard: openCard
+    openCard: openCard,
+    closeCard: closeCard
   };
 })();

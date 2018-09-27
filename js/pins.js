@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  /* СОЗДАНИЕ ПИНА */
   var templatePin = document.querySelector('#pin').content.querySelector('.map__pin');
 
   function renderPin(obj) {
@@ -23,12 +22,22 @@
     return fragmentPins;
   }
 
-  function addPins(array) {
-    var mapPins = document.querySelector('.map__pins');
+  function addPins(array, container) {
     var newPin = createPinElements(array);
-    return mapPins.appendChild(newPin);
+    return container.appendChild(newPin);
+  }
+
+  function onPinClick(evt) {
+    var pin = evt.target.closest('.map__pin:not(.map__pin--main)');
+    if (pin) {
+      var id = pin.dataset.id;
+      var data = window.data.offers[id];
+      window.card.closeCard();
+      window.card.openCard(data, window.map.map);
+    }
   }
   window.pins = {
-    addPins: addPins
+    addPins: addPins,
+    onPinClick: onPinClick
   };
 })();
