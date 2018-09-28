@@ -21,23 +21,17 @@
     }
     return fragmentPins;
   }
+  /*
+  function removePins() {
+    var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    for (var i = 0; i < pins.length; i++) {
+      pins[i].remove();
+    }
+  }*/
 
   function addPins(array, container) {
     var newPin = createPinElements(array);
     return container.appendChild(newPin);
   }
-
-  function onPinClick(evt) {
-    var pin = evt.target.closest('.map__pin:not(.map__pin--main)');
-    if (pin) {
-      var id = pin.dataset.id;
-      var data = window.data.offers[id];
-      window.card.closeCard();
-      window.card.openCard(data, window.map.map);
-    }
-  }
-  window.pins = {
-    addPins: addPins,
-    onPinClick: onPinClick
-  };
+  window.pins = addPins;
 })();

@@ -6,6 +6,11 @@
   var pinContainer = map.querySelector('.map__pins');
   var mapPinMain = map.querySelector('.map__pin--main');
   var startCoords = {};
+  /*
+  var defaultCoords = {
+    x: 570,
+    y: 375
+  };*/
   var limits = {
     top: 130,
     left: 1,
@@ -16,9 +21,19 @@
 
   window.form.setAddress(firstCoords);
 
-  map.addEventListener('click', window.pins.onPinClick);
+  map.addEventListener('click', onMapClick);
   mapPinMain.addEventListener('mouseup', onPinMainMouseUp);
   mapPinMain.addEventListener('mousedown', onPinMainMouseDown);
+
+  function onMapClick(evt) {
+    var pin = evt.target.closest('.map__pin:not(.map__pin--main)');
+    if (pin) {
+      var id = pin.dataset.id;
+      var data = window.data[id];
+      window.card.close();
+      window.card.open(data, map);
+    }
+  }
 
   function onPinMainMouseDown(evt) {
     document.addEventListener('mousemove', onDocumentMouseMove);
@@ -40,13 +55,6 @@
     var newCoords = calculateNewCoords(shift);
     setCoords(newCoords);
     document.addEventListener('mouseup', onDocumentMouseUp);
-  }
-
-  function onDocumentMouseUp() {
-    var addressCoords = getAddress(mapPinMain);
-    window.form.setAddress(addressCoords);
-    document.removeEventListener('mouseup', onDocumentMouseUp);
-    document.removeEventListener('mousemove', onDocumentMouseMove);
   }
 
   function calculateNewCoords(shift) {
@@ -74,11 +82,16 @@
     mapPinMain.style.top = coords.y + 'px';
   }
 
+  function onDocumentMouseUp() {
+    var addressCoords = getAddress(mapPinMain);
+    window.form.setAddress(addressCoords);
+    document.removeEventListener('mouseup', onDocumentMouseUp);
+    document.removeEventListener('mousemove', onDocumentMouseMove);
+  }
+
   function onPinMainMouseUp() {
     activatePage();
-    window.pins.addPins(window.data.offers, pinContainer);
-    window.form.changeAvailabilityFields(window.form.adFormFieldSets);
-    window.form.changeAvailabilityFields(window.form.filterFormItems);
+    window.pins(window.data, pinContainer);
     var disabledAddressCoords = getAddress(mapPinMain);
     window.form.setAddress(disabledAddressCoords);
     mapPinMain.removeEventListener('mouseup', onPinMainMouseUp);
@@ -87,8 +100,13 @@
 
   function activatePage() {
     map.classList.remove('map--faded');
-    window.form.adForm.classList.remove('ad-form--disabled');
+    window.form.enable();
   }
+  /*
+  function deactivatePage() {
+    map.classList.add('map--faded');
+    window.form.disable();
+  }*/
 
   function getAddress(elem) {
     var pinLeft = elem.style.left;
@@ -100,8 +118,4 @@
     }
     return {x: x, y: y};
   }
-  window.map = {
-    map: map,
-    mapPinMain: mapPinMain
-  };
 })();

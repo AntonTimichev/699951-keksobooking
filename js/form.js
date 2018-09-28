@@ -21,8 +21,7 @@
   };
 
   setMinPrice(selectType.value);
-  changeAvailabilityFields(filterFormItems);
-  changeAvailabilityFields(adFormFieldSets);
+  changeAvailabilityFields();
 
   adForm.addEventListener('input', onElementInput);
   submit.addEventListener('click', onSubmitClick);
@@ -97,17 +96,20 @@
     return adForm.classList.contains('ad-form--disabled');
   }
 
-  function changeAvailabilityFields(formFields) {
+  function changeAvailabilityFields() {
     var disable = isFormDisabled();
-    for (var i = 0; i < formFields.length; i++) {
-      formFields[i].disabled = disable;
+    for (var i = 0; i < filterFormItems.length; i++) {
+      filterFormItems[i].disabled = disable;
+    }
+    for (var j = 0; j < adFormFieldSets.length; j++) {
+      adFormFieldSets[j].disabled = disable;
     }
   }
   window.form = {
-    adForm: adForm,
-    adFormFieldSets: adFormFieldSets,
-    filterFormItems: filterFormItems,
     setAddress: setAddress,
-    changeAvailabilityFields: changeAvailabilityFields
+    enable: function () {
+      adForm.classList.remove('ad-form--disabled');
+      changeAvailabilityFields();
+    }
   };
 })();

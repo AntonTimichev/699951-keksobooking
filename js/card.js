@@ -104,14 +104,14 @@
   }
 
   function closeCard() {
-    var card = window.map.map.querySelector('.map__card');
+    var card = document.querySelector('.map__card');
     if (card) {
       card.remove();
     }
     document.removeEventListener('keydown', onOfferEscPress);
   }
   window.card = {
-    openCard: openCard,
-    closeCard: closeCard
+    open: openCard,
+    close: closeCard
   };
 })();

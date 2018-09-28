@@ -98,7 +98,5 @@
     }
     return arrOffers;
   }
-  window.data = {
-    offers: offers
-  };
+  window.data = offers;
 })();
