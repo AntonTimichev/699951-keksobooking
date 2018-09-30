@@ -1,464 +1,121 @@
 'use strict';
 
-var amountCards = 8;
-var photos = [
-  'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
-  'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
-  'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
-];
-var titles = [
-  'Большая уютная квартира',
-  'Маленькая неуютная квартира',
-  'Огромный прекрасный дворец',
-  'Маленький ужасный дворец',
-  'Красивый гостевой домик',
-  'Некрасивый негостеприимный домик',
-  'Уютное бунгало далеко от моря',
-  'Неуютное бунгало по колено в воде'
-];
-var types = ['palace', 'flat', 'house', 'bungalo'];
-var times = ['12:00', '13:00', '14:00'];
-var features = [
-  'wifi',
-  'dishwasher',
-  'parking',
-  'washer',
-  'elevator',
-  'conditioner'
-];
-var map = document.querySelector('.map');
-var templatePin = document.querySelector('#pin').content.querySelector('.map__pin');
-var templateCard = document.querySelector('#card').content.querySelector('.map__card');
-var offers = getOffers();
+(function () {
+  var HIEGHT_PIN = 20;
+  var map = document.querySelector('.map');
+  var pinContainer = map.querySelector('.map__pins');
+  var mapPinMain = map.querySelector('.map__pin--main');
+  var startCoords = {};
+  /*
+  var defaultCoords = {
+    x: 570,
+    y: 375
+  };*/
+  var limits = {
+    top: 130,
+    left: 1,
+    right: 1135,
+    bottom: 630
+  };
+  var firstCoords = getAddress(mapPinMain);
 
-function getRandomInteger(min, max) {
-  var randomNumber = min + Math.random() * (max + 1 - min);
-  return Math.floor(randomNumber);
-}
+  window.form.setAddress(firstCoords);
 
-function getRandomArrayElement(arr) {
-  var min = 0;
-  var max = arr.length - 1;
-  var randomElement = getRandomInteger(min, max);
-  return arr[randomElement];
-}
+  map.addEventListener('click', onMapClick);
+  mapPinMain.addEventListener('mouseup', onPinMainMouseUp);
+  mapPinMain.addEventListener('mousedown', onPinMainMouseDown);
 
-function getMixArray(arr) {
-  var j;
-  var temp;
-  for (var i = arr.length - 1; i > 0; i--) {
-    j = Math.floor(Math.random() * (i + 1));
-    temp = arr[j];
-    arr[j] = arr[i];
-    arr[i] = temp;
-  }
-  return arr;
-}
-
-function getArrRandomLength(arr) {
-  var min = 0;
-  var max = arr.length;
-  var randomIndex = getRandomInteger(min, max);
-  return arr.slice(0, randomIndex);
-}
-
-function getPhotos(array) {
-  var arrPhotos = array.slice();
-  return getMixArray(arrPhotos);
-}
-
-function getOffers() {
-  var arrOffers = [];
-  var titlesMix = getMixArray(titles);
-  for (var i = 0; i < amountCards; i++) {
-    var locationX = getRandomInteger(1, 1050);
-    var locationY = getRandomInteger(130, 630);
-    var card = {
-      id: i,
-      author: {
-        avatar: 'img/avatars/user0' + (i + 1) + '.png'
-      },
-      offer: {
-        title: titlesMix[i],
-        address: locationX + ', ' + locationY,
-        price: getRandomInteger(1000, 1000000),
-        type: getRandomArrayElement(types),
-        rooms: getRandomInteger(1, 5),
-        guests: getRandomInteger(1, 10),
-        checkin: getRandomArrayElement(times),
-        checkout: getRandomArrayElement(times),
-        features: getArrRandomLength(features),
-        description: '',
-        photos: getPhotos(photos)
-      },
-      location: {
-        x: locationX,
-        y: locationY
-      }
-    };
-    arrOffers.push(card);
-  }
-  return arrOffers;
-}
-
-/*
-СОЗДАНИЕ ПИНА
-*/
-function renderPin(obj) {
-  var pinElement = templatePin.cloneNode(true);
-  pinElement.dataset.id = obj.id;
-  pinElement.style.top = obj.location.y + 'px';
-  pinElement.style.left = obj.location.x + 'px';
-  pinElement.querySelector('img').src = obj.author.avatar;
-  pinElement.querySelector('img').alt = obj.offer.title;
-  return pinElement;
-}
-
-function createPinElements(array) {
-  var fragmentPins = document.createDocumentFragment();
-  for (var i = 0; i < array.length; i++) {
-    var pin = renderPin(array[i]);
-    fragmentPins.appendChild(pin);
-  }
-  return fragmentPins;
-}
-
-function addPins(array) {
-  var mapPins = document.querySelector('.map__pins');
-  var newPin = createPinElements(array);
-  return mapPins.appendChild(newPin);
-}
-
-/*
-*СОЗДАНИЕ ОБЪЯВЛЕНИЯ
-*/
-function getFragmentFeatures(array) {
-  var fragmentFeatures = document.createDocumentFragment();
-  for (var i = 0; i < array.length; i++) {
-    var newElement = document.createElement('li');
-    var className = 'popup__feature--' + array[i];
-    newElement.classList.add('popup__feature');
-    newElement.classList.add(className);
-    fragmentFeatures.appendChild(newElement);
-  }
-  return fragmentFeatures;
-}
-
-function getFragmentPhotos(array) {
-  var fragmentPhotos = document.createDocumentFragment();
-  var popupPhoto = document.querySelector('#card').content.querySelector('.popup__photo');
-  for (var i = 0; i < array.length; i++) {
-    var newElement = popupPhoto.cloneNode(true);
-    newElement.src = array[i];
-    fragmentPhotos.appendChild(newElement);
-  }
-  return fragmentPhotos;
-}
-
-function getOfferType(obj) {
-  var offerType;
-  switch (obj.offer.type) {
-    case 'flat': offerType = 'Квартира';
-      break;
-    case 'palace': offerType = 'Дворец';
-      break;
-    case 'bungalo': offerType = 'Бунгало';
-      break;
-    case 'house': offerType = 'Дом';
-      break;
-    default: offerType = 'Ночлежка';
-      break;
-  }
-  return offerType;
-}
-
-function getTextCapacity(obj) {
-  var rooms = obj.offer.rooms;
-  var guests = obj.offer.guests;
-  var textCapacity;
-  if (rooms === 1 && guests === 1) {
-    textCapacity = rooms + ' комната для ' + guests + ' гостя';
-  } else if (rooms >= 2 && guests === 1) {
-    textCapacity = rooms + ' комнаты для ' + guests + ' гостя';
-  } else if (rooms === 1 && guests >= 2) {
-    textCapacity = rooms + ' комнатa для ' + guests + ' гостей';
-  } else if (rooms === 5 && guests === 1) {
-    textCapacity = rooms + ' комнат для ' + guests + ' гостя';
-  } else if (rooms === 5 && guests >= 2) {
-    textCapacity = rooms + ' комнат для ' + guests + ' гостей';
-  } else {
-    textCapacity = rooms + ' комнаты для ' + guests + ' гостей';
-  }
-  return textCapacity;
-}
-
-function createNoticeElement(obj) {
-  var cardElement = templateCard.cloneNode(true);
-  var cardFeatures = cardElement.querySelector('.popup__features');
-  var featuresFragment = getFragmentFeatures(obj.offer.features);
-  var cardPhotos = cardElement.querySelector('.popup__photos');
-  var photosFragment = getFragmentPhotos(obj.offer.photos);
-  cardElement.querySelector('.popup__title').textContent = obj.offer.title;
-  cardElement.querySelector('.popup__text--address').textContent = obj.offer.address;
-  cardElement.querySelector('.popup__text--price').innerHTML = obj.offer.price + '&#x20bd<span>/ночь</span>';
-  cardElement.querySelector('.popup__type').textContent = getOfferType(obj);
-  cardElement.querySelector('.popup__text--capacity').textContent = getTextCapacity(obj);
-  cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + obj.offer.checkin + ' выезд после ' + obj.offer.checkout;
-  cardElement.querySelector('.popup__description').textContent = obj.offer.description;
-  cardElement.querySelector('.popup__avatar').src = obj.author.avatar;
-  cardFeatures.innerHTML = '';
-  cardFeatures.appendChild(featuresFragment);
-  cardPhotos.innerHTML = '';
-  cardPhotos.appendChild(photosFragment);
-  return cardElement;
-}
-
-function openCard(obj) {
-  var newNotice = createNoticeElement(obj);
-  map.appendChild(newNotice);
-  var popupClose = map.querySelector('.popup__close');
-  popupClose.addEventListener('click', onCloseOfferClick);
-  document.addEventListener('keydown', onOfferEscPress);
-}
-
-/*
-MODULE4 - TASK1
-*/
-var HIEGHT_PIN = 20;
-var ESC_KEYCODE = 27;
-var mapPinMain = map.querySelector('.map__pin--main');
-var adForm = document.querySelector('.ad-form');
-var adFormFieldSets = adForm.querySelectorAll('fieldset');
-var mapFilters = document.querySelector('.map__filters');
-var filterFormItems = mapFilters.querySelectorAll('.map__filters > *');
-var address = adForm.querySelector('#address');
-var firstCoords = getAddress(mapPinMain);
-
-changeAvailabilityFields(filterFormItems);
-changeAvailabilityFields(adFormFieldSets);
-setAddress(firstCoords);
-
-map.addEventListener('click', onPinClick);
-mapPinMain.addEventListener('mouseup', onPinMainMouseUp);
-
-function onPinClick(evt) {
-  var pin = evt.target.closest('.map__pin:not(.map__pin--main)');
-  if (pin) {
-    var id = pin.dataset.id;
-    var data = offers[id];
-    closeCard();
-    openCard(data);
-  }
-}
-
-function onCloseOfferClick() {
-  closeCard();
-}
-
-function onOfferEscPress(evt) {
-  if (evt.which === ESC_KEYCODE) {
-    closeCard();
-  }
-}
-
-function onPinMainMouseUp() {
-  activatePage();
-  addPins(offers);
-  changeAvailabilityFields(adFormFieldSets);
-  changeAvailabilityFields(filterFormItems);
-  var disabledAddressCoords = getAddress(mapPinMain);
-  setAddress(disabledAddressCoords);
-  mapPinMain.removeEventListener('mouseup', onPinMainMouseUp);
-  document.removeEventListener('mousemove', onDocumentMouseMove);
-}
-
-function closeCard() {
-  var card = map.querySelector('.map__card');
-  if (card) {
-    card.remove();
-  }
-  document.removeEventListener('keydown', onOfferEscPress);
-}
-
-function changeAvailabilityFields(formFields) {
-  var isFormDisabled = isMapDisabled();
-  for (var i = 0; i < formFields.length; i++) {
-    formFields[i].disabled = isFormDisabled;
-  }
-}
-
-function isMapDisabled() {
-  return map.classList.contains('map--faded');
-}
-
-function activatePage() {
-  map.classList.remove('map--faded');
-  adForm.classList.remove('ad-form--disabled');
-}
-
-function setAddress(coords) {
-  address.value = coords.x + ', ' + coords.y;
-}
-
-function getAddress(elem) {
-  var pinLeft = elem.style.left;
-  var pinTop = elem.style.top;
-  var x = parseInt(pinLeft, 10) + Math.round(elem.clientWidth / 2);
-  var y = parseInt(pinTop, 10) + Math.round(elem.clientHeight + HIEGHT_PIN);
-  if (map.classList.contains('map--faded')) {
-    y = parseInt(pinTop, 10) + Math.round(elem.clientHeight / 2);
-  }
-  return {x: x, y: y};
-}
-
-/*
-MODULE4 - TASK2
-*/
-var price = adForm.querySelector('#price');
-var selectType = adForm.querySelector('#type');
-var selectTimeIn = adForm.querySelector('#timein');
-var selectTimeOut = adForm.querySelector('#timeout');
-var selectRoom = adForm.querySelector('#room_number');
-var selectCapacity = adForm.querySelector('#capacity');
-var submit = adForm.querySelector('.ad-form__submit');
-var fieldsets = adForm.querySelectorAll('fieldset > input, select');
-var PriceOfType = {
-  'bungalo': 0,
-  'flat': 1000,
-  'house': 5000,
-  'palace': 10000
-};
-
-setMinPrice(selectType.value);
-
-adForm.addEventListener('input', onElementInput);
-submit.addEventListener('click', onSubmitClick);
-selectTimeIn.addEventListener('change', onSelectTimeChange);
-selectTimeOut.addEventListener('change', onSelectTimeChange);
-selectType.addEventListener('change', onSelectTypeChange);
-
-function onElementInput(evt) {
-  var field = evt.target;
-  unMarkValidFields(field);
-}
-
-function onSelectTypeChange() {
-  setMinPrice(selectType.value);
-}
-
-function onSelectTimeChange(evt) {
-  var newSelect = evt.target;
-  setTimeInOut(newSelect);
-}
-
-function onSubmitClick() {
-  checkCapacity();
-  markInvalidFields();
-}
-
-function checkCapacity() {
-  var capacity = +selectCapacity.value;
-  var roomNumber = +selectRoom.value;
-  var message = null;
-  if (roomNumber !== 100 && (capacity > roomNumber || capacity < 1)) {
-    message = 'Количество гостей НЕ должно быть больше ' + roomNumber + ' и меньше 1';
-  } else if (roomNumber === 100 && capacity !== 0) {
-    message = 'Поставьте пункт \<не для гостей\> в поле <Количество мест>';
-  } else {
-    message = '';
-  }
-  selectCapacity.setCustomValidity(message);
-}
-
-function setTimeInOut(newSelect) {
-  selectTimeIn.value = newSelect.value;
-  selectTimeOut.value = newSelect.value;
-}
-
-function setMinPrice(typeValue) {
-  price.min = PriceOfType[typeValue];
-  price.placeholder = PriceOfType[typeValue];
-}
-
-function unMarkValidFields(field) {
-  var hasFieldRemovedClass = field.classList.contains('field-invalid');
-  if (hasFieldRemovedClass) {
-    field.classList.remove('field-invalid');
-  }
-}
-
-function markInvalidFields() {
-  for (var i = 0; i < fieldsets.length; i++) {
-    var fieldset = fieldsets[i];
-    if (!fieldset.validity.valid) {
-      fieldset.classList.add('field-invalid');
+  function onMapClick(evt) {
+    var pin = evt.target.closest('.map__pin:not(.map__pin--main)');
+    if (pin) {
+      var id = pin.dataset.id;
+      var data = window.data[id];
+      window.card.close();
+      window.card.open(data, map);
     }
   }
-}
 
-/*
-MODULE5 - TASK1
-*/
-var startCoords = {};
-var limits = {
-  top: 130,
-  left: 1,
-  right: 1135,
-  bottom: 630
-};
-mapPinMain.addEventListener('mousedown', onPinMainMouseDown);
-
-function onPinMainMouseDown(evt) {
-  document.addEventListener('mousemove', onDocumentMouseMove);
-  startCoords = {
-    x: evt.clientX,
-    y: evt.clientY
-  };
-}
-
-function onDocumentMouseMove(evt) {
-  var shift = {
-    x: startCoords.x - evt.clientX,
-    y: startCoords.y - evt.clientY
-  };
-  startCoords = {
-    x: evt.clientX,
-    y: evt.clientY
-  };
-  var newCoords = calculateNewCoords(shift);
-  setCoords(newCoords);
-  document.addEventListener('mouseup', onDocumentMouseUp);
-}
-
-function onDocumentMouseUp() {
-  var addressCoords = getAddress(mapPinMain);
-  setAddress(addressCoords);
-  document.removeEventListener('mouseup', onDocumentMouseUp);
-  document.removeEventListener('mousemove', onDocumentMouseMove);
-}
-
-function calculateNewCoords(shift) {
-  var newCoords = {
-    x: mapPinMain.offsetLeft - shift.x,
-    y: mapPinMain.offsetTop - shift.y
-  };
-  if (newCoords.x > limits.right) {
-    newCoords.x = limits.right;
+  function onPinMainMouseDown(evt) {
+    document.addEventListener('mousemove', onDocumentMouseMove);
+    startCoords = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
   }
-  if (newCoords.x < limits.left) {
-    newCoords.x = limits.left;
-  }
-  if (newCoords.y > limits.bottom) {
-    newCoords.y = limits.bottom;
-  }
-  if (newCoords.y < limits.top) {
-    newCoords.y = limits.top;
-  }
-  return newCoords;
-}
 
-function setCoords(coords) {
-  mapPinMain.style.left = coords.x + 'px';
-  mapPinMain.style.top = coords.y + 'px';
-}
+  function onDocumentMouseMove(evt) {
+    var shift = {
+      x: startCoords.x - evt.clientX,
+      y: startCoords.y - evt.clientY
+    };
+    startCoords = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
+    var newCoords = calculateNewCoords(shift);
+    setCoords(newCoords);
+    document.addEventListener('mouseup', onDocumentMouseUp);
+  }
 
+  function calculateNewCoords(shift) {
+    var newCoords = {
+      x: mapPinMain.offsetLeft - shift.x,
+      y: mapPinMain.offsetTop - shift.y
+    };
+    if (newCoords.x > limits.right) {
+      newCoords.x = limits.right;
+    }
+    if (newCoords.x < limits.left) {
+      newCoords.x = limits.left;
+    }
+    if (newCoords.y > limits.bottom) {
+      newCoords.y = limits.bottom;
+    }
+    if (newCoords.y < limits.top) {
+      newCoords.y = limits.top;
+    }
+    return newCoords;
+  }
+
+  function setCoords(coords) {
+    mapPinMain.style.left = coords.x + 'px';
+    mapPinMain.style.top = coords.y + 'px';
+  }
+
+  function onDocumentMouseUp() {
+    var addressCoords = getAddress(mapPinMain);
+    window.form.setAddress(addressCoords);
+    document.removeEventListener('mouseup', onDocumentMouseUp);
+    document.removeEventListener('mousemove', onDocumentMouseMove);
+  }
+
+  function onPinMainMouseUp() {
+    activatePage();
+    window.pins(window.data, pinContainer);
+    var disabledAddressCoords = getAddress(mapPinMain);
+    window.form.setAddress(disabledAddressCoords);
+    mapPinMain.removeEventListener('mouseup', onPinMainMouseUp);
+    document.removeEventListener('mousemove', onDocumentMouseMove);
+  }
+
+  function activatePage() {
+    map.classList.remove('map--faded');
+    window.form.enable();
+  }
+  /*
+  function deactivatePage() {
+    map.classList.add('map--faded');
+    window.form.disable();
+  }*/
+
+  function getAddress(elem) {
+    var pinLeft = elem.style.left;
+    var pinTop = elem.style.top;
+    var x = parseInt(pinLeft, 10) + Math.round(elem.clientWidth / 2);
+    var y = parseInt(pinTop, 10) + Math.round(elem.clientHeight + HIEGHT_PIN);
+    if (map.classList.contains('map--faded')) {
+      y = parseInt(pinTop, 10) + Math.round(elem.clientHeight / 2);
+    }
+    return {x: x, y: y};
+  }
+})();
