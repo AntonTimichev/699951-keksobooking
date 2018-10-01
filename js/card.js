@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  var ESC_KEYCODE = 27;
   var templateCard = document.querySelector('#card').content.querySelector('.map__card');
 
   function getFragmentFeatures(array) {
@@ -98,7 +97,7 @@
   }
 
   function onOfferEscPress(evt) {
-    if (evt.which === ESC_KEYCODE) {
+    if (evt.which === window.const.ESC_KEYCODE) {
       closeCard();
     }
   }
@@ -108,6 +107,7 @@
     if (card) {
       card.remove();
     }
+    window.pins.removePinActive();
     document.removeEventListener('keydown', onOfferEscPress);
   }
   window.card = {

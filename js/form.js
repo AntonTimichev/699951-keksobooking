@@ -19,15 +19,26 @@
     'house': 5000,
     'palace': 10000
   };
+  /*
+  var defaultCoords = {
+    x: 570,
+    y: 375
+  };*/
 
   setMinPrice(selectType.value);
   changeAvailabilityFields();
 
   adForm.addEventListener('input', onElementInput);
   submit.addEventListener('click', onSubmitClick);
+  adForm.addEventListener('submit', onFormSubmit);
   selectTimeIn.addEventListener('change', onSelectTimeChange);
   selectTimeOut.addEventListener('change', onSelectTimeChange);
   selectType.addEventListener('change', onSelectTypeChange);
+
+  function onFormSubmit(evt) {
+    window.backend.upLoadForm(new FormData(adForm), window.query.onSuccess, window.query.onLoadError);
+    evt.preventDefault();
+  }
 
   function onElementInput(evt) {
     var field = evt.target;

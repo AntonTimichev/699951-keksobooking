@@ -1,16 +1,10 @@
 'use strict';
 
 (function () {
-  var HIEGHT_PIN = 20;
   var map = document.querySelector('.map');
   var pinContainer = map.querySelector('.map__pins');
   var mapPinMain = map.querySelector('.map__pin--main');
   var startCoords = {};
-  /*
-  var defaultCoords = {
-    x: 570,
-    y: 375
-  };*/
   var limits = {
     top: 130,
     left: 1,
@@ -28,8 +22,10 @@
   function onMapClick(evt) {
     var pin = evt.target.closest('.map__pin:not(.map__pin--main)');
     if (pin) {
+      window.pins.removePinActive();
+      pin.classList.add('map__pin--active');
       var id = pin.dataset.id;
-      var data = window.data[id];
+      var data = window.query.loadOffers[id];
       window.card.close();
       window.card.open(data, map);
     }
@@ -91,7 +87,8 @@
 
   function onPinMainMouseUp() {
     activatePage();
-    window.pins(window.data, pinContainer);
+    window.backend.loadData(window.query.getLoadOffers, window.query.onLoadError);
+    window.pins.addPins(window.query.loadOffers, pinContainer);
     var disabledAddressCoords = getAddress(mapPinMain);
     window.form.setAddress(disabledAddressCoords);
     mapPinMain.removeEventListener('mouseup', onPinMainMouseUp);
@@ -112,7 +109,7 @@
     var pinLeft = elem.style.left;
     var pinTop = elem.style.top;
     var x = parseInt(pinLeft, 10) + Math.round(elem.clientWidth / 2);
-    var y = parseInt(pinTop, 10) + Math.round(elem.clientHeight + HIEGHT_PIN);
+    var y = parseInt(pinTop, 10) + Math.round(elem.clientHeight + window.const.HIEGHT_PIN);
     if (map.classList.contains('map--faded')) {
       y = parseInt(pinTop, 10) + Math.round(elem.clientHeight / 2);
     }
