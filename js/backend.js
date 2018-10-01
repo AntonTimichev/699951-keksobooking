@@ -16,16 +16,19 @@
       if (xhr.status === 200) {
         onLoad(xhr.response);
       } else {
-        onError(xhr.status);
+        var errMessage = 'Ошибка загрузки данных с сервера: ' + xhr.status;
+        onError(errMessage);
       }
     }
 
     function onDataLoadError() {
-      onError(xhr.status);
+      var errMessage = 'Ошибка загрузки данных с сервера: ' + xhr.status + ' проверьте интернет-соединение';
+      onError(errMessage);
     }
 
     function onDataLoadTimeOut() {
-      onError(xhr.status);
+      var errMessage = 'Данные не успели загрузиться с сервера: ' + xhr.status;
+      onError(errMessage);
     }
   }
 
@@ -41,7 +44,8 @@
       if (xhr.status === 200) {
         onLoad();
       } else {
-        onError(xhr.status);
+        var errMessage = 'Ошибка загрузки объявления: ' + xhr.status;
+        onError(errMessage);
       }
     }
   }

@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  var loadOffers = [];
   var main = document.querySelector('main');
   var successBlock = getSuccessBlock();
   var errorBlock = getErrorBlock();
@@ -17,11 +16,11 @@
   }
 
   function onLoadError(err) {
-    errorBlock.querySelector('.error__message').textContent = 'Ошибка загрузки объявления:' + err;
+    errorBlock.querySelector('.error__message').textContent = err;
     showErrorMessage();
   }
 
-  function onSuccess() {
+  function onLoadSuccess() {
     showSuccessMassage();
   }
 
@@ -39,8 +38,10 @@
     document.addEventListener('click', onSuccesMessageClick);
   }
 
-  function onErrorMessageEscPress() {
-    hideErrorMassage();
+  function onErrorMessageEscPress(evt) {
+    if (evt.which === window.const.ESC_KEYCODE) {
+      hideErrorMassage();
+    }
   }
 
   function onErrorMessageClick() {
@@ -68,18 +69,9 @@
     document.removeEventListener('keydown', onErrorMessageEscPress);
     document.addEventListener('click', onErrorMessageClick);
   }
-
-  function getLoadOffers(data) {
-    for (var i = 0; i < data.length; i++) {
-      loadOffers.push(data[i]);
-    }
-    return loadOffers;
-  }
   window.query = {
     onLoadError: onLoadError,
-    onSuccess: onSuccess,
-    loadOffers: loadOffers,
-    getLoadOffers: getLoadOffers
+    onFormSuccess: onLoadSuccess
   };
 })();
 

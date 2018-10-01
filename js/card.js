@@ -94,11 +94,13 @@
 
   function onCloseOfferClick() {
     closeCard();
+    window.pins.removeActiveStatus();
   }
 
   function onOfferEscPress(evt) {
     if (evt.which === window.const.ESC_KEYCODE) {
       closeCard();
+      window.pins.removeActiveStatus();
     }
   }
 
@@ -107,7 +109,6 @@
     if (card) {
       card.remove();
     }
-    window.pins.removePinActive();
     document.removeEventListener('keydown', onOfferEscPress);
   }
   window.card = {

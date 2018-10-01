@@ -13,17 +13,13 @@
   var selectCapacity = adForm.querySelector('#capacity');
   var submit = adForm.querySelector('.ad-form__submit');
   var fields = adForm.querySelectorAll('fieldset > input, select');
+  var resetButton = adForm.querySelector('.ad-form__reset');
   var PriceOfType = {
     'bungalo': 0,
     'flat': 1000,
     'house': 5000,
     'palace': 10000
   };
-  /*
-  var defaultCoords = {
-    x: 570,
-    y: 375
-  };*/
 
   setMinPrice(selectType.value);
   changeAvailabilityFields();
@@ -34,9 +30,14 @@
   selectTimeIn.addEventListener('change', onSelectTimeChange);
   selectTimeOut.addEventListener('change', onSelectTimeChange);
   selectType.addEventListener('change', onSelectTypeChange);
+  resetButton.addEventListener('click', onResetClick);
 
   function onFormSubmit(evt) {
-    window.backend.upLoadForm(new FormData(adForm), window.query.onSuccess, window.query.onLoadError);
+    window.backend.upLoadForm(new FormData(adForm), function () {
+      window.query.onFormSuccess();
+      window.mapDisable();
+      setMinPrice(selectType.value);
+    }, window.query.onLoadError);
     evt.preventDefault();
   }
 
@@ -57,6 +58,11 @@
   function onSubmitClick() {
     checkCapacity();
     markInvalidFields();
+  }
+
+  function onResetClick() {
+    window.mapDisable();
+    setMinPrice(selectType.value);
   }
 
   function checkCapacity() {
@@ -120,6 +126,11 @@
     setAddress: setAddress,
     enable: function () {
       adForm.classList.remove('ad-form--disabled');
+      changeAvailabilityFields();
+    },
+    disable: function () {
+      adForm.reset();
+      adForm.classList.add('ad-form--disabled');
       changeAvailabilityFields();
     }
   };

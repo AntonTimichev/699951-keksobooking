@@ -21,15 +21,20 @@
     }
     return fragmentPins;
   }
-  /*
+
+  function getPinsLoadedOffers() {
+    return document.querySelectorAll('.map__pin:not(.map__pin--main)');
+  }
+
   function removePins() {
+    var pins = getPinsLoadedOffers();
     for (var i = 0; i < pins.length; i++) {
       pins[i].remove();
     }
-  }*/
+  }
 
-  function removePinActive() {
-    var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+  function removeActiveStatus() {
+    var pins = getPinsLoadedOffers();
     for (var i = 0; i < pins.length; i++) {
       if (pins[i].classList.contains('map__pin--active')) {
         pins[i].classList.remove('map__pin--active');
@@ -42,7 +47,8 @@
     return container.appendChild(newPin);
   }
   window.pins = {
-    addPins: addPins,
-    removePinActive: removePinActive
+    add: addPins,
+    removeActiveStatus: removeActiveStatus,
+    remove: removePins
   };
 })();
