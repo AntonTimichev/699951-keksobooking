@@ -31,14 +31,19 @@
   selectTimeOut.addEventListener('change', onSelectTimeChange);
   selectType.addEventListener('change', onSelectTypeChange);
   resetButton.addEventListener('click', onResetClick);
+  selectRoom.addEventListener('change', onSelectRoomChange);
 
   function onFormSubmit(evt) {
     window.backend.upLoadForm(new FormData(adForm), function () {
-      window.query.onFormSuccess();
+      window.notice.onFormSuccess();
       window.mapDisable();
       setMinPrice(selectType.value);
-    }, window.query.onLoadError);
+    }, window.notice.onLoadError);
     evt.preventDefault();
+  }
+
+  function onSelectRoomChange() {
+    unMarkValidFields(selectCapacity);
   }
 
   function onElementInput(evt) {
@@ -61,6 +66,10 @@
   }
 
   function onResetClick() {
+    var invalidFields = adForm.querySelectorAll('.field-invalid');
+    for (var i = 0; i < invalidFields.length; i++) {
+      unMarkValidFields(invalidFields[i]);
+    }
     window.mapDisable();
     setMinPrice(selectType.value);
   }

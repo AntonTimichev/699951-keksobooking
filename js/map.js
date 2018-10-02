@@ -99,7 +99,7 @@
       mapPinMain.removeEventListener('mouseup', onPinMainMouseUp);
       document.removeEventListener('mousemove', onDocumentMouseMove);
     }, function (err) {
-      window.query.onLoadError(err);
+      window.notice.onLoadError(err);
       document.removeEventListener('mousemove', onDocumentMouseMove);
     });
   }

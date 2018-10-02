@@ -69,7 +69,7 @@
     document.removeEventListener('keydown', onErrorMessageEscPress);
     document.addEventListener('click', onErrorMessageClick);
   }
-  window.query = {
+  window.notice = {
     onLoadError: onLoadError,
     onFormSuccess: onLoadSuccess
   };
