@@ -15,16 +15,8 @@
     return templateSuccess.cloneNode(true);
   }
 
-  function onLoadError(err) {
+  function showErrorMessage(err) {
     errorBlock.querySelector('.error__message').textContent = err;
-    showErrorMessage();
-  }
-
-  function onLoadSuccess() {
-    showSuccessMassage();
-  }
-
-  function showErrorMessage() {
     main.appendChild(errorBlock);
     var errorButton = errorBlock.querySelector('.error__button');
     errorButton.addEventListener('click', onErrorMessageClick);
@@ -34,44 +26,44 @@
 
   function showSuccessMassage() {
     main.appendChild(successBlock);
-    document.addEventListener('keydown', onSuccesMessageEscPress);
-    document.addEventListener('click', onSuccesMessageClick);
-  }
-
-  function onErrorMessageEscPress(evt) {
-    if (evt.which === window.const.ESC_KEYCODE) {
-      hideErrorMassage();
-    }
+    document.addEventListener('keydown', onSuccessMessageEscPress);
+    document.addEventListener('click', onSuccessMessageClick);
   }
 
   function onErrorMessageClick() {
     hideErrorMassage();
   }
 
-  function onSuccesMessageClick() {
+  function onSuccessMessageClick() {
     hideSuccessMassage();
   }
 
-  function onSuccesMessageEscPress(evt) {
-    if (evt.which === window.const.ESC_KEYCODE) {
+  function onErrorMessageEscPress(evt) {
+    if (evt.which === window.constant.ESC_KEYCODE) {
+      hideErrorMassage();
+    }
+  }
+
+  function onSuccessMessageEscPress(evt) {
+    if (evt.which === window.constant.ESC_KEYCODE) {
       hideSuccessMassage();
     }
   }
 
   function hideSuccessMassage() {
     successBlock.remove();
-    document.removeEventListener('keydown', onSuccesMessageEscPress);
-    document.removeEventListener('click', onSuccesMessageEscPress);
+    document.removeEventListener('keydown', onSuccessMessageEscPress);
+    document.removeEventListener('click', onSuccessMessageClick);
   }
 
   function hideErrorMassage() {
     errorBlock.remove();
     document.removeEventListener('keydown', onErrorMessageEscPress);
-    document.addEventListener('click', onErrorMessageClick);
+    document.removeEventListener('click', onErrorMessageClick);
   }
   window.notice = {
-    onLoadError: onLoadError,
-    onFormSuccess: onLoadSuccess
+    showError: showErrorMessage,
+    showSuccess: showSuccessMassage
   };
 })();
 

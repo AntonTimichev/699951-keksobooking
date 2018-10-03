@@ -33,22 +33,12 @@
     }
   }
 
-  function removeActiveStatus() {
-    var pins = getPinsLoadedOffers();
-    for (var i = 0; i < pins.length; i++) {
-      if (pins[i].classList.contains('map__pin--active')) {
-        pins[i].classList.remove('map__pin--active');
-      }
-    }
-  }
-
   function addPins(array, container) {
     var newPin = createPinElements(array);
     return container.appendChild(newPin);
   }
   window.pins = {
     add: addPins,
-    removeActiveStatus: removeActiveStatus,
     remove: removePins
   };
 })();

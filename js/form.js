@@ -35,10 +35,12 @@
 
   function onFormSubmit(evt) {
     window.backend.upLoadForm(new FormData(adForm), function () {
-      window.notice.onFormSuccess();
-      window.mapDisable();
+      window.notice.showSuccess();
+      window.disableMap();
       setMinPrice(selectType.value);
-    }, window.notice.onLoadError);
+    }, function (err) {
+      window.notice.showError(err);
+    });
     evt.preventDefault();
   }
 
@@ -70,7 +72,7 @@
     for (var i = 0; i < invalidFields.length; i++) {
       unMarkValidFields(invalidFields[i]);
     }
-    window.mapDisable();
+    window.disableMap();
     setMinPrice(selectType.value);
   }
 

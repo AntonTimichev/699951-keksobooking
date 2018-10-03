@@ -9,7 +9,7 @@
     xhr.addEventListener('error', onDataLoadError);
     xhr.addEventListener('timeout', onDataLoadTimeOut);
     xhr.timeout = 10000;
-    xhr.open('GET', window.const.URL_LOAD);
+    xhr.open('GET', window.constant.URL_LOAD);
     xhr.send();
 
     function onDataLoad() {
@@ -37,7 +37,7 @@
     xhr.responseType = 'json';
 
     xhr.addEventListener('load', onFormLoad);
-    xhr.open('POST', window.const.URL_UPLOAD);
+    xhr.open('POST', window.constant.URL_UPLOAD);
     xhr.send(data);
 
     function onFormLoad() {

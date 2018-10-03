@@ -16,6 +16,7 @@
     y: 375
   };
   var loadedOffers = [];
+  var activeElement = null;
 
   writeAddress();
 
@@ -23,14 +24,33 @@
   mapPinMain.addEventListener('mousedown', onPinMainMouseDown);
 
   function onMapClick(evt) {
-    var pin = evt.target.closest('.map__pin:not(.map__pin--main)');
-    if (pin) {
-      window.pins.removeActiveStatus();
-      pin.classList.add('map__pin--active');
-      var id = pin.dataset.id;
+    var element = evt.target.closest('.map__pin:not(.map__pin--main)');
+    if (element) {
+      removeActiveStatus();
+      element.classList.add('map__pin--active');
+      activeElement = element;
+      var id = element.dataset.id;
       var data = loadedOffers[id];
       window.card.close();
       window.card.open(data, map);
+      document.addEventListener('keydown', onOfferEsc);
+    }
+    if (evt.target.closest('.popup__close')) {
+      removeActiveStatus();
+    }
+  }
+
+  function removeActiveStatus() {
+    if (activeElement) {
+      activeElement.classList.remove('map__pin--active');
+    }
+  }
+
+  function onOfferEsc(evt) {
+    if (evt.which === window.constant.ESC_KEYCODE) {
+      removeActiveStatus();
+      window.card.close();
+      document.removeEventListener('keydown', onOfferEsc);
     }
   }
 
@@ -99,7 +119,7 @@
       mapPinMain.removeEventListener('mouseup', onPinMainMouseUp);
       document.removeEventListener('mousemove', onDocumentMouseMove);
     }, function (err) {
-      window.notice.onLoadError(err);
+      window.notice.showError(err);
       document.removeEventListener('mousemove', onDocumentMouseMove);
     });
   }
@@ -116,6 +136,7 @@
     window.form.disable();
     setCoords(defaultCoords);
     writeAddress();
+    document.removeEventListener('keydown', onOfferEsc);
   }
 
   function writeAddress() {
@@ -133,11 +154,11 @@
     var pinLeft = elem.style.left;
     var pinTop = elem.style.top;
     var x = parseInt(pinLeft, 10) + Math.round(elem.clientWidth / 2);
-    var y = parseInt(pinTop, 10) + Math.round(elem.clientHeight + window.const.HIEGHT_PIN);
+    var y = parseInt(pinTop, 10) + Math.round(elem.clientHeight + window.constant.HIEGHT_PIN);
     if (map.classList.contains('map--faded')) {
       y = parseInt(pinTop, 10) + Math.round(elem.clientHeight / 2);
     }
     return {x: x, y: y};
   }
-  window.mapDisable = deactivatePage;
+  window.disableMap = deactivatePage;
 })();

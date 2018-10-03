@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  window.const = {
+  window.constant = {
     URL_UPLOAD: 'https://js.dump.academy/keksobooking',
     URL_LOAD: 'https://js.dump.academy/keksobooking/data',
     ESC_KEYCODE: 27,

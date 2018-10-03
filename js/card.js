@@ -89,19 +89,10 @@
     container.appendChild(newNotice);
     var popupClose = container.querySelector('.popup__close');
     popupClose.addEventListener('click', onCloseOfferClick);
-    document.addEventListener('keydown', onOfferEscPress);
   }
 
   function onCloseOfferClick() {
     closeCard();
-    window.pins.removeActiveStatus();
-  }
-
-  function onOfferEscPress(evt) {
-    if (evt.which === window.const.ESC_KEYCODE) {
-      closeCard();
-      window.pins.removeActiveStatus();
-    }
   }
 
   function closeCard() {
@@ -109,7 +100,6 @@
     if (card) {
       card.remove();
     }
-    document.removeEventListener('keydown', onOfferEscPress);
   }
   window.card = {
     open: openCard,
