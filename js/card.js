@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  var ESC_KEYCODE = 27;
   var templateCard = document.querySelector('#card').content.querySelector('.map__card');
 
   function getFragmentFeatures(array) {
@@ -90,17 +89,10 @@
     container.appendChild(newNotice);
     var popupClose = container.querySelector('.popup__close');
     popupClose.addEventListener('click', onCloseOfferClick);
-    document.addEventListener('keydown', onOfferEscPress);
   }
 
   function onCloseOfferClick() {
     closeCard();
-  }
-
-  function onOfferEscPress(evt) {
-    if (evt.which === ESC_KEYCODE) {
-      closeCard();
-    }
   }
 
   function closeCard() {
@@ -108,7 +100,6 @@
     if (card) {
       card.remove();
     }
-    document.removeEventListener('keydown', onOfferEscPress);
   }
   window.card = {
     open: openCard,

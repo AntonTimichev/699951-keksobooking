@@ -13,6 +13,7 @@
   var selectCapacity = adForm.querySelector('#capacity');
   var submit = adForm.querySelector('.ad-form__submit');
   var fields = adForm.querySelectorAll('fieldset > input, select');
+  var resetButton = adForm.querySelector('.ad-form__reset');
   var PriceOfType = {
     'bungalo': 0,
     'flat': 1000,
@@ -25,9 +26,27 @@
 
   adForm.addEventListener('input', onElementInput);
   submit.addEventListener('click', onSubmitClick);
+  adForm.addEventListener('submit', onFormSubmit);
   selectTimeIn.addEventListener('change', onSelectTimeChange);
   selectTimeOut.addEventListener('change', onSelectTimeChange);
   selectType.addEventListener('change', onSelectTypeChange);
+  resetButton.addEventListener('click', onResetClick);
+  selectRoom.addEventListener('change', onSelectRoomChange);
+
+  function onFormSubmit(evt) {
+    window.backend.upLoadForm(new FormData(adForm), function () {
+      window.notice.showSuccess();
+      window.disableMap();
+      setMinPrice(selectType.value);
+    }, function (err) {
+      window.notice.showError(err);
+    });
+    evt.preventDefault();
+  }
+
+  function onSelectRoomChange() {
+    unMarkValidFields(selectCapacity);
+  }
 
   function onElementInput(evt) {
     var field = evt.target;
@@ -46,6 +65,15 @@
   function onSubmitClick() {
     checkCapacity();
     markInvalidFields();
+  }
+
+  function onResetClick() {
+    var invalidFields = adForm.querySelectorAll('.field-invalid');
+    for (var i = 0; i < invalidFields.length; i++) {
+      unMarkValidFields(invalidFields[i]);
+    }
+    window.disableMap();
+    setMinPrice(selectType.value);
   }
 
   function checkCapacity() {
@@ -109,6 +137,11 @@
     setAddress: setAddress,
     enable: function () {
       adForm.classList.remove('ad-form--disabled');
+      changeAvailabilityFields();
+    },
+    disable: function () {
+      adForm.reset();
+      adForm.classList.add('ad-form--disabled');
       changeAvailabilityFields();
     }
   };
