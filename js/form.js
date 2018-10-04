@@ -36,7 +36,7 @@
   function onFormSubmit(evt) {
     window.backend.upLoadForm(new FormData(adForm), function () {
       window.notice.showSuccess();
-      window.disableMap();
+      window.map.disableMap();
       setMinPrice(selectType.value);
     }, function (err) {
       window.notice.showError(err);
@@ -72,7 +72,7 @@
     for (var i = 0; i < invalidFields.length; i++) {
       unMarkValidFields(invalidFields[i]);
     }
-    window.disableMap();
+    window.map.disableMap();
     setMinPrice(selectType.value);
   }
 

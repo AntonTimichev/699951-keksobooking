@@ -40,10 +40,28 @@
     }
   }
 
-  function removeActiveStatus() {
-    if (activeElement) {
-      activeElement.classList.remove('map__pin--active');
-    }
+  function onDocumentMouseUp() {
+    writeAddress();
+    document.removeEventListener('mousemove', onDocumentMouseMove);
+    document.removeEventListener('mouseup', onDocumentMouseUp);
+  }
+
+  function onPinMainMouseUp() {
+    window.backend.loadData(function (data) {
+      activatePage();
+      loadedOffers = data;
+      writeAddress();
+      window.filter.set(loadedOffers, function (cards) {
+        window.pins.remove();
+        window.card.close();
+        window.pins.add(cards, pinContainer);
+      });
+      mapPinMain.removeEventListener('mouseup', onPinMainMouseUp);
+      document.removeEventListener('mousemove', onDocumentMouseMove);
+    }, function (err) {
+      window.notice.showError(err);
+      document.removeEventListener('mousemove', onDocumentMouseMove);
+    });
   }
 
   function onOfferEsc(evt) {
@@ -104,26 +122,6 @@
     mapPinMain.style.top = coords.y + 'px';
   }
 
-  function onDocumentMouseUp() {
-    writeAddress();
-    document.removeEventListener('mousemove', onDocumentMouseMove);
-    document.removeEventListener('mouseup', onDocumentMouseUp);
-  }
-
-  function onPinMainMouseUp() {
-    window.backend.loadData(function (data) {
-      activatePage();
-      setLoadedOffers(data);
-      window.pins.add(data, pinContainer);
-      writeAddress();
-      mapPinMain.removeEventListener('mouseup', onPinMainMouseUp);
-      document.removeEventListener('mousemove', onDocumentMouseMove);
-    }, function (err) {
-      window.notice.showError(err);
-      document.removeEventListener('mousemove', onDocumentMouseMove);
-    });
-  }
-
   function activatePage() {
     map.classList.remove('map--faded');
     window.form.enable();
@@ -139,16 +137,23 @@
     document.removeEventListener('keydown', onOfferEsc);
   }
 
+  function removeActiveStatus() {
+    if (activeElement) {
+      activeElement.classList.remove('map__pin--active');
+    }
+  }
+
   function writeAddress() {
     var address = getAddress(mapPinMain);
     window.form.setAddress(address);
   }
-
+  /*
   function setLoadedOffers(data) {
     for (var i = 0; i < data.length; i++) {
       loadedOffers.push(data[i]);
     }
   }
+  */
 
   function getAddress(elem) {
     var pinLeft = elem.style.left;
@@ -160,5 +165,7 @@
     }
     return {x: x, y: y};
   }
-  window.disableMap = deactivatePage;
+  window.map = {
+    disableMap: deactivatePage
+  };
 })();

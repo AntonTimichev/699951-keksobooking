@@ -100,3 +100,6 @@
   }
   window.data = offers;
 })();
+/*
+
+*/
