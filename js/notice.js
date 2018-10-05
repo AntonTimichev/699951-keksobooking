@@ -61,6 +61,7 @@
     document.removeEventListener('keydown', onErrorMessageEscPress);
     document.removeEventListener('click', onErrorMessageClick);
   }
+
   window.notice = {
     showError: showErrorMessage,
     showSuccess: showSuccessMassage

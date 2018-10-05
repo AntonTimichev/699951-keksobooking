@@ -1,7 +1,8 @@
 'use strict';
 
 (function () {
-  var filterFormItems = document.querySelectorAll('.map__filters > *');
+  var filterForm = document.querySelector('.map__filters');
+  var filterFormFields = document.querySelectorAll('.map__filters > *');
   var adForm = document.querySelector('.ad-form');
   var adFormFieldSets = adForm.querySelectorAll('fieldset');
   var address = adForm.querySelector('#address');
@@ -36,7 +37,7 @@
   function onFormSubmit(evt) {
     window.backend.upLoadForm(new FormData(adForm), function () {
       window.notice.showSuccess();
-      window.map.disableMap();
+      window.disableMap();
       setMinPrice(selectType.value);
     }, function (err) {
       window.notice.showError(err);
@@ -68,17 +69,16 @@
   }
 
   function onResetClick() {
-    var invalidFields = adForm.querySelectorAll('.field-invalid');
-    for (var i = 0; i < invalidFields.length; i++) {
-      unMarkValidFields(invalidFields[i]);
-    }
-    window.map.disableMap();
+    fields.forEach(function (field) {
+      unMarkValidFields(field);
+    });
+    window.disableMap();
     setMinPrice(selectType.value);
   }
 
   function checkCapacity() {
-    var capacity = +selectCapacity.value;
-    var roomNumber = +selectRoom.value;
+    var capacity = Number(selectCapacity.value);
+    var roomNumber = Number(selectRoom.value);
     var message = null;
     if (roomNumber !== 100 && (capacity > roomNumber || capacity < 1)) {
       message = 'Количество гостей НЕ должно быть больше ' + roomNumber + ' и меньше 1';
@@ -108,12 +108,11 @@
   }
 
   function markInvalidFields() {
-    for (var i = 0; i < fields.length; i++) {
-      var field = fields[i];
+    fields.forEach(function (field) {
       if (!field.validity.valid) {
         field.classList.add('field-invalid');
       }
-    }
+    });
   }
 
   function setAddress(coords) {
@@ -126,13 +125,14 @@
 
   function changeAvailabilityFields() {
     var disable = isFormDisabled();
-    for (var i = 0; i < filterFormItems.length; i++) {
-      filterFormItems[i].disabled = disable;
-    }
-    for (var j = 0; j < adFormFieldSets.length; j++) {
-      adFormFieldSets[j].disabled = disable;
-    }
+    filterFormFields.forEach(function (field) {
+      field.disabled = disable;
+    });
+    adFormFieldSets.forEach(function (field) {
+      field.disabled = disable;
+    });
   }
+
   window.form = {
     setAddress: setAddress,
     enable: function () {
@@ -140,9 +140,11 @@
       changeAvailabilityFields();
     },
     disable: function () {
+      filterForm.reset();
       adForm.reset();
       adForm.classList.add('ad-form--disabled');
       changeAvailabilityFields();
-    }
+    },
+    filter: filterForm
   };
 })();

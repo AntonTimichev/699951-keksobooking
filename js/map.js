@@ -29,8 +29,10 @@
       removeActiveStatus();
       element.classList.add('map__pin--active');
       activeElement = element;
-      var id = element.dataset.id;
-      var data = loadedOffers[id];
+      var id = Number(element.dataset.id);
+      var data = loadedOffers.find(function (offer) {
+        return offer.id === id;
+      });
       window.card.close();
       window.card.open(data, map);
       document.addEventListener('keydown', onOfferEsc);
@@ -49,11 +51,14 @@
   function onPinMainMouseUp() {
     window.backend.loadData(function (data) {
       activatePage();
-      loadedOffers = data;
-      window.pins.add(loadedOffers, pinContainer);
+      loadedOffers = data.map(function (offer, index) {
+        offer.id = index;
+        return offer;
+      });
       writeAddress();
-      window.filter(loadedOffers, function (cards) {
-        loadedOffers = cards;
+      window.filter.set(loadedOffers, function (cards) {
+        window.pins.remove();
+        window.card.close();
         window.pins.add(cards, pinContainer);
       });
       mapPinMain.removeEventListener('mouseup', onPinMainMouseUp);
@@ -147,13 +152,6 @@
     var address = getAddress(mapPinMain);
     window.form.setAddress(address);
   }
-  /*
-  function setLoadedOffers(data) {
-    for (var i = 0; i < data.length; i++) {
-      loadedOffers.push(data[i]);
-    }
-  }
-  */
 
   function getAddress(elem) {
     var pinLeft = elem.style.left;
@@ -165,7 +163,6 @@
     }
     return {x: x, y: y};
   }
-  window.map = {
-    disableMap: deactivatePage
-  };
+
+  window.disableMap = deactivatePage;
 })();

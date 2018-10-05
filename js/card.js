@@ -101,6 +101,7 @@
       card.remove();
     }
   }
+
   window.card = {
     open: openCard,
     close: closeCard

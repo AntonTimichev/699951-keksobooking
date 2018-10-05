@@ -3,9 +3,9 @@
 (function () {
   var templatePin = document.querySelector('#pin').content.querySelector('.map__pin');
 
-  function renderPin(obj, id) {
+  function renderPin(obj) {
     var pinElement = templatePin.cloneNode(true);
-    pinElement.dataset.id = id;
+    pinElement.dataset.id = obj.id;
     pinElement.style.top = obj.location.y + 'px';
     pinElement.style.left = obj.location.x + 'px';
     pinElement.querySelector('img').src = obj.author.avatar;
@@ -16,8 +16,7 @@
   function createPinElements(array) {
     var fragmentPins = document.createDocumentFragment();
     for (var i = 0; i < array.length; i++) {
-      var pin = renderPin(array[i], i);
-      console.log(pin);
+      var pin = renderPin(array[i]);
       fragmentPins.appendChild(pin);
     }
     return fragmentPins;
@@ -38,6 +37,7 @@
     var newPins = createPinElements(array);
     container.appendChild(newPins);
   }
+
   window.pins = {
     add: addPins,
     remove: removePins
