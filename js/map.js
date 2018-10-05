@@ -50,10 +50,10 @@
     window.backend.loadData(function (data) {
       activatePage();
       loadedOffers = data;
+      window.pins.add(loadedOffers, pinContainer);
       writeAddress();
       window.filter(loadedOffers, function (cards) {
-        window.pins.remove();
-        window.card.close();
+        loadedOffers = cards;
         window.pins.add(cards, pinContainer);
       });
       mapPinMain.removeEventListener('mouseup', onPinMainMouseUp);

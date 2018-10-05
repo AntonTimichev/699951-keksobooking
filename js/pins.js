@@ -17,6 +17,7 @@
     var fragmentPins = document.createDocumentFragment();
     for (var i = 0; i < array.length; i++) {
       var pin = renderPin(array[i], i);
+      console.log(pin);
       fragmentPins.appendChild(pin);
     }
     return fragmentPins;
@@ -34,8 +35,8 @@
   }
 
   function addPins(array, container) {
-    var newPin = createPinElements(array);
-    return container.appendChild(newPin);
+    var newPins = createPinElements(array);
+    container.appendChild(newPins);
   }
   window.pins = {
     add: addPins,

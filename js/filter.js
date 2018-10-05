@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var DEBOUNCE_INTERVAL = 2000;
+  var DEBOUNCE_INTERVAL = 20;
   var filterForm = document.querySelector('.map__filters');
   var mapFeatures = filterForm.querySelectorAll('.map__checkbox');
   var selects = filterForm.querySelectorAll('.map__filter');
@@ -11,6 +11,7 @@
 
     return function () {
       var args = arguments;
+      console.log(args);
       if (lastTimeout) {
         window.clearTimeout(lastTimeout);
       }
@@ -22,7 +23,7 @@
 
   function getFilteredOffers(data) {
     var filter = getUserProperty();
-    var filteredCards = [];
+    var cards = [];
     data.forEach(function (offer) {
       var userOffer = offer.offer;
       var isType = compareType(userOffer, filter);
@@ -31,10 +32,10 @@
       var isGuests = compareGuests(userOffer, filter);
       var isFeatures = compareFeatures(userOffer, filter);
       if (isType && isPrice && isRooms && isGuests && isFeatures) {
-        filteredCards.push(offer);
+        cards.push(offer);
       }
     });
-    return filteredCards;
+    return cards.slice(0, 5);
   }
 
   function compareType(offer, filter) {
@@ -98,13 +99,17 @@
     });
     return customFilter;
   }
+
   window.filter = function (data, callback) {
     filterForm.addEventListener('change', function () {
       var filteredAds = getFilteredOffers(data);
-
-      debounceFiltration(function () {
+      console.log(filteredAds);
+      window.pins.remove();
+      window.card.close();
+      callback(filteredAds);
+      /*debounceFiltration(function () {
         callback(filteredAds);
-      });
+      });*/
     });
   };
 })();
