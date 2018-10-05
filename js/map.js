@@ -51,7 +51,7 @@
       activatePage();
       loadedOffers = data;
       writeAddress();
-      window.filter.set(loadedOffers, function (cards) {
+      window.filter(loadedOffers, function (cards) {
         window.pins.remove();
         window.card.close();
         window.pins.add(cards, pinContainer);
