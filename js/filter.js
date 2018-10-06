@@ -1,8 +1,12 @@
 'use strict';
 
 (function () {
-  var features = window.form.filter.querySelectorAll('.map__checkbox');
-  var selects = window.form.filter.querySelectorAll('.map__filter');
+  var filterFormFields = document.querySelectorAll('.map__filters > *');
+  var filterForm = document.querySelector('.map__filters');
+  var features = filterForm.querySelectorAll('.map__checkbox');
+  var selects = filterForm.querySelectorAll('.map__filter');
+
+  changeAvailabilityFields(true);
 
   function getFilteredOffers(data) {
     var filter = getUserProperty();
@@ -79,15 +83,28 @@
     return customFilter;
   }
 
+  function changeAvailabilityFields(disable) {
+    filterFormFields.forEach(function (field) {
+      field.disabled = disable;
+    });
+  }
+
   window.filter = {
     set: function (data, callback) {
       var filteredAds = getFilteredOffers(data);
       callback(filteredAds);
       var debounceCallback = window.debounce(callback);
-      window.form.filter.addEventListener('change', function () {
+      filterForm.addEventListener('change', function () {
         filteredAds = getFilteredOffers(data);
         debounceCallback(filteredAds);
       });
+    },
+    disable: function () {
+      filterForm.reset();
+      changeAvailabilityFields(true);
+    },
+    enable: function () {
+      changeAvailabilityFields(false);
     }
   };
 })();

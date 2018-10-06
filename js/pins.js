@@ -2,6 +2,21 @@
 
 (function () {
   var templatePin = document.querySelector('#pin').content.querySelector('.map__pin');
+  var activePin = null;
+
+  function disableActivePin() {
+    if (activePin) {
+      activePin.classList.remove('map__pin--active');
+    }
+  }
+
+  function setActivePin(pin) {
+    disableActivePin();
+    if (pin) {
+      pin.classList.add('map__pin--active');
+      activePin = pin;
+    }
+  }
 
   function renderPin(obj) {
     var pinElement = templatePin.cloneNode(true);
@@ -40,6 +55,7 @@
 
   window.pins = {
     add: addPins,
-    remove: removePins
+    remove: removePins,
+    setActive: setActivePin
   };
 })();

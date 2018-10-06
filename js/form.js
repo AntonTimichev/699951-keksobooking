@@ -1,8 +1,6 @@
 'use strict';
 
 (function () {
-  var filterForm = document.querySelector('.map__filters');
-  var filterFormFields = document.querySelectorAll('.map__filters > *');
   var adForm = document.querySelector('.ad-form');
   var adFormFieldSets = adForm.querySelectorAll('fieldset');
   var address = adForm.querySelector('#address');
@@ -38,6 +36,7 @@
     window.backend.upLoadForm(new FormData(adForm), function () {
       window.notice.showSuccess();
       window.disableMap();
+      disableForm();
       setMinPrice(selectType.value);
     }, function (err) {
       window.notice.showError(err);
@@ -73,6 +72,7 @@
       unMarkValidFields(field);
     });
     window.disableMap();
+    disableForm();
     setMinPrice(selectType.value);
   }
 
@@ -125,12 +125,16 @@
 
   function changeAvailabilityFields() {
     var disable = isFormDisabled();
-    filterFormFields.forEach(function (field) {
-      field.disabled = disable;
-    });
     adFormFieldSets.forEach(function (field) {
       field.disabled = disable;
     });
+  }
+
+  function disableForm() {
+    adForm.reset();
+    adForm.classList.add('ad-form--disabled');
+    window.filter.disable();
+    changeAvailabilityFields();
   }
 
   window.form = {
@@ -138,13 +142,6 @@
     enable: function () {
       adForm.classList.remove('ad-form--disabled');
       changeAvailabilityFields();
-    },
-    disable: function () {
-      filterForm.reset();
-      adForm.reset();
-      adForm.classList.add('ad-form--disabled');
-      changeAvailabilityFields();
-    },
-    filter: filterForm
+    }
   };
 })();

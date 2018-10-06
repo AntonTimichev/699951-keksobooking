@@ -16,7 +16,6 @@
     y: 375
   };
   var loadedOffers = [];
-  var activeElement = null;
 
   writeAddress();
 
@@ -26,19 +25,14 @@
   function onMapClick(evt) {
     var element = evt.target.closest('.map__pin:not(.map__pin--main)');
     if (element) {
-      removeActiveStatus();
-      element.classList.add('map__pin--active');
-      activeElement = element;
+      window.card.close();
+      window.pins.setActive(element);
       var id = Number(element.dataset.id);
       var data = loadedOffers.find(function (offer) {
         return offer.id === id;
       });
-      window.card.close();
       window.card.open(data, map);
-      document.addEventListener('keydown', onOfferEsc);
-    }
-    if (evt.target.closest('.popup__close')) {
-      removeActiveStatus();
+      window.card.callback(window.pins.setActive);
     }
   }
 
@@ -67,14 +61,6 @@
       window.notice.showError(err);
       document.removeEventListener('mousemove', onDocumentMouseMove);
     });
-  }
-
-  function onOfferEsc(evt) {
-    if (evt.which === window.constant.ESC_KEYCODE) {
-      removeActiveStatus();
-      window.card.close();
-      document.removeEventListener('keydown', onOfferEsc);
-    }
   }
 
   function onPinMainMouseDown(evt) {
@@ -130,22 +116,15 @@
   function activatePage() {
     map.classList.remove('map--faded');
     window.form.enable();
+    window.filter.enable();
   }
 
   function deactivatePage() {
     map.classList.add('map--faded');
     window.pins.remove();
     window.card.close();
-    window.form.disable();
     setCoords(defaultCoords);
     writeAddress();
-    document.removeEventListener('keydown', onOfferEsc);
-  }
-
-  function removeActiveStatus() {
-    if (activeElement) {
-      activeElement.classList.remove('map__pin--active');
-    }
   }
 
   function writeAddress() {
