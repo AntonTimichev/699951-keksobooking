@@ -2,6 +2,7 @@
 
 (function () {
   var templateCard = document.querySelector('#card').content.querySelector('.map__card');
+  var closeCallback = null;
 
   function getFragmentFeatures(array) {
     var fragmentFeatures = document.createDocumentFragment();
@@ -89,20 +90,38 @@
     container.appendChild(newNotice);
     var popupClose = container.querySelector('.popup__close');
     popupClose.addEventListener('click', onCloseOfferClick);
+    document.addEventListener('keydown', onOfferEscPress);
+  }
+
+  function onOfferEscPress(evt) {
+    if (evt.which === window.constants.ESC_KEYCODE) {
+      closeCard();
+      document.removeEventListener('keydown', onOfferEscPress);
+    }
   }
 
   function onCloseOfferClick() {
     closeCard();
   }
 
+  function setCloseCallback(callback) {
+    closeCallback = callback;
+  }
+
   function closeCard() {
     var card = document.querySelector('.map__card');
     if (card) {
       card.remove();
+      document.removeEventListener('keydown', onOfferEscPress);
+    }
+    if (closeCallback) {
+      closeCallback();
     }
   }
+
   window.card = {
     open: openCard,
-    close: closeCard
+    close: closeCard,
+    setCloseCallback: setCloseCallback
   };
 })();

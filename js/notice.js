@@ -18,8 +18,6 @@
   function showErrorMessage(err) {
     errorBlock.querySelector('.error__message').textContent = err;
     main.appendChild(errorBlock);
-    var errorButton = errorBlock.querySelector('.error__button');
-    errorButton.addEventListener('click', onErrorMessageClick);
     document.addEventListener('keydown', onErrorMessageEscPress);
     document.addEventListener('click', onErrorMessageClick);
   }
@@ -28,6 +26,7 @@
     main.appendChild(successBlock);
     document.addEventListener('keydown', onSuccessMessageEscPress);
     document.addEventListener('click', onSuccessMessageClick);
+    document.activeElement.blur();
   }
 
   function onErrorMessageClick() {
@@ -39,13 +38,13 @@
   }
 
   function onErrorMessageEscPress(evt) {
-    if (evt.which === window.constant.ESC_KEYCODE) {
+    if (evt.which === window.constants.ESC_KEYCODE) {
       hideErrorMassage();
     }
   }
 
   function onSuccessMessageEscPress(evt) {
-    if (evt.which === window.constant.ESC_KEYCODE) {
+    if (evt.which === window.constants.ESC_KEYCODE) {
       hideSuccessMassage();
     }
   }
@@ -61,6 +60,7 @@
     document.removeEventListener('keydown', onErrorMessageEscPress);
     document.removeEventListener('click', onErrorMessageClick);
   }
+
   window.notice = {
     showError: showErrorMessage,
     showSuccess: showSuccessMassage
