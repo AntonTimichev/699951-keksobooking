@@ -1,6 +1,9 @@
 'use strict';
 
 (function () {
+  var URL_UPLOAD = 'https://js.dump.academy/keksobooking';
+  var URL_LOAD = 'https://js.dump.academy/keksobooking/data';
+
   function loadData(onLoad, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
@@ -8,12 +11,13 @@
     xhr.addEventListener('load', onDataLoad);
     xhr.addEventListener('error', onDataLoadError);
     xhr.addEventListener('timeout', onDataLoadTimeOut);
-    xhr.timeout = 10000;
-    xhr.open('GET', window.constant.URL_LOAD);
+
+    xhr.timeout = 5000;
+    xhr.open('GET', URL_LOAD);
     xhr.send();
 
     function onDataLoad() {
-      if (xhr.status === 200) {
+      if (xhr.status === window.constants.SUCCSESS_CODE) {
         onLoad(xhr.response);
       } else {
         var errMessage = 'Ошибка загрузки данных с сервера: ' + xhr.status;
@@ -22,7 +26,7 @@
     }
 
     function onDataLoadError() {
-      var errMessage = 'Ошибка загрузки данных с сервера: ' + xhr.status + ' проверьте интернет-соединение';
+      var errMessage = 'Ошибка загрузки данных с сервера: ' + xhr.status + '. Проверьте интернет-соединение';
       onError(errMessage);
     }
 
@@ -37,16 +41,30 @@
     xhr.responseType = 'json';
 
     xhr.addEventListener('load', onFormLoad);
-    xhr.open('POST', window.constant.URL_UPLOAD);
+    xhr.addEventListener('error', onFormUpLoadError);
+    xhr.addEventListener('timeout', onFormUpLoadTimeOut);
+
+    xhr.timeout = 5000;
+    xhr.open('POST', URL_UPLOAD);
     xhr.send(data);
 
     function onFormLoad() {
-      if (xhr.status === 200) {
+      if (xhr.status === window.constants.SUCCSESS_CODE) {
         onLoad();
       } else {
         var errMessage = 'Ошибка загрузки объявления: ' + xhr.status;
         onError(errMessage);
       }
+    }
+
+    function onFormUpLoadError() {
+      var errMessage = 'Ошибка загрузки объявления: ' + xhr.status + '. Проверьте интернет-соединение';
+      onError(errMessage);
+    }
+
+    function onFormUpLoadTimeOut() {
+      var errMessage = 'Данные не успели загрузиться на сервер: ' + xhr.status;
+      onError(errMessage);
     }
   }
 

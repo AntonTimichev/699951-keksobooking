@@ -9,7 +9,7 @@
   changeAvailabilityFields(true);
 
   function getFilteredOffers(data) {
-    var filter = getUserProperty();
+    var filter = getFilterProperty();
     var cards = data.slice();
     return cards.filter(function (offer) {
       var userOffer = offer.offer;
@@ -50,7 +50,7 @@
     }
   }
 
-  function getUserProperty() {
+  function getFilterProperty() {
     var customFilter = {
       features: [],
       type: '',

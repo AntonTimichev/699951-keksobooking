@@ -90,13 +90,13 @@
     container.appendChild(newNotice);
     var popupClose = container.querySelector('.popup__close');
     popupClose.addEventListener('click', onCloseOfferClick);
-    document.addEventListener('keydown', onOfferEsc);
+    document.addEventListener('keydown', onOfferEscPress);
   }
 
-  function onOfferEsc(evt) {
-    if (evt.which === window.constant.ESC_KEYCODE) {
+  function onOfferEscPress(evt) {
+    if (evt.which === window.constants.ESC_KEYCODE) {
       closeCard();
-      document.removeEventListener('keydown', onOfferEsc);
+      document.removeEventListener('keydown', onOfferEscPress);
     }
   }
 
@@ -112,7 +112,7 @@
     var card = document.querySelector('.map__card');
     if (card) {
       card.remove();
-      document.removeEventListener('keydown', onOfferEsc);
+      document.removeEventListener('keydown', onOfferEscPress);
     }
     if (closeCallback) {
       closeCallback();
@@ -122,6 +122,6 @@
   window.card = {
     open: openCard,
     close: closeCard,
-    callback: setCloseCallback
+    setCloseCallback: setCloseCallback
   };
 })();

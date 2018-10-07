@@ -1,6 +1,9 @@
 'use strict';
 
 (function () {
+  var PIN_HEIGHT = 70;
+  var PIN_WIDTH = 50;
+  var PIN_TAIL_HEIGHT = 20;
   var templatePin = document.querySelector('#pin').content.querySelector('.map__pin');
   var activePin = null;
 
@@ -21,8 +24,8 @@
   function renderPin(obj) {
     var pinElement = templatePin.cloneNode(true);
     pinElement.dataset.id = obj.id;
-    pinElement.style.top = obj.location.y + 'px';
-    pinElement.style.left = obj.location.x + 'px';
+    pinElement.style.top = obj.location.y - (PIN_HEIGHT + PIN_TAIL_HEIGHT) + 'px';
+    pinElement.style.left = obj.location.x - Math.round((PIN_WIDTH) / 2) + 'px';
     pinElement.querySelector('img').src = obj.author.avatar;
     pinElement.querySelector('img').alt = obj.offer.title;
     return pinElement;

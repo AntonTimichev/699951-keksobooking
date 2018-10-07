@@ -1,15 +1,16 @@
 'use strict';
 
 (function () {
+  var MAIN_PIN_TAIL_HEIGHT = 20;
   var map = document.querySelector('.map');
   var pinContainer = map.querySelector('.map__pins');
   var mapPinMain = map.querySelector('.map__pin--main');
   var startCoords = {};
   var limits = {
-    top: 130,
+    top: 130 - MAIN_PIN_TAIL_HEIGHT - mapPinMain.clientHeight,
     left: 1,
     right: 1135,
-    bottom: 630
+    bottom: 630 - MAIN_PIN_TAIL_HEIGHT - mapPinMain.clientHeight
   };
   var defaultCoords = {
     x: 570,
@@ -17,6 +18,7 @@
   };
   var loadedOffers = [];
 
+  window.card.setCloseCallback(window.pins.setActive);
   writeAddress();
 
   map.addEventListener('click', onMapClick);
@@ -32,7 +34,6 @@
         return offer.id === id;
       });
       window.card.open(data, map);
-      window.card.callback(window.pins.setActive);
     }
   }
 
@@ -119,7 +120,7 @@
     window.filter.enable();
   }
 
-  function deactivatePage() {
+  function deactivateMap() {
     map.classList.add('map--faded');
     window.pins.remove();
     window.card.close();
@@ -136,12 +137,12 @@
     var pinLeft = elem.style.left;
     var pinTop = elem.style.top;
     var x = parseInt(pinLeft, 10) + Math.round(elem.clientWidth / 2);
-    var y = parseInt(pinTop, 10) + Math.round(elem.clientHeight + window.constant.HIEGHT_PIN);
+    var y = parseInt(pinTop, 10) + Math.round(elem.clientHeight + MAIN_PIN_TAIL_HEIGHT);
     if (map.classList.contains('map--faded')) {
       y = parseInt(pinTop, 10) + Math.round(elem.clientHeight / 2);
     }
     return {x: x, y: y};
   }
 
-  window.disableMap = deactivatePage;
+  window.disableMap = deactivateMap;
 })();
