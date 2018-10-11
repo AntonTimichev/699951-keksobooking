@@ -33,10 +33,10 @@
 
   function createPinElements(array) {
     var fragmentPins = document.createDocumentFragment();
-    for (var i = 0; i < array.length; i++) {
-      var pin = renderPin(array[i]);
+    array.forEach(function (elem) {
+      var pin = renderPin(elem);
       fragmentPins.appendChild(pin);
-    }
+    });
     return fragmentPins;
   }
 
@@ -46,9 +46,9 @@
 
   function removePins() {
     var pins = getPinsLoadedOffers();
-    for (var i = 0; i < pins.length; i++) {
-      pins[i].remove();
-    }
+    pins.forEach(function (pin) {
+      pin.remove();
+    });
   }
 
   function addPins(array, container) {

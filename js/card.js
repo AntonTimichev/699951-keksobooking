@@ -6,24 +6,24 @@
 
   function getFragmentFeatures(array) {
     var fragmentFeatures = document.createDocumentFragment();
-    for (var i = 0; i < array.length; i++) {
+    array.forEach(function (elem) {
       var newElement = document.createElement('li');
-      var className = 'popup__feature--' + array[i];
+      var className = 'popup__feature--' + elem;
       newElement.classList.add('popup__feature');
       newElement.classList.add(className);
       fragmentFeatures.appendChild(newElement);
-    }
+    });
     return fragmentFeatures;
   }
 
   function getFragmentPhotos(array) {
     var fragmentPhotos = document.createDocumentFragment();
     var popupPhoto = document.querySelector('#card').content.querySelector('.popup__photo');
-    for (var i = 0; i < array.length; i++) {
+    array.forEach(function (elem) {
       var newElement = popupPhoto.cloneNode(true);
-      newElement.src = array[i];
+      newElement.src = elem;
       fragmentPhotos.appendChild(newElement);
-    }
+    });
     return fragmentPhotos;
   }
 

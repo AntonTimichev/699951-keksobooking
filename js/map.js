@@ -29,7 +29,7 @@
     if (element) {
       window.card.close();
       window.pins.setActive(element);
-      var id = Number(element.dataset.id);
+      var id = parseInt(element.dataset.id, 10);
       var data = loadedOffers.find(function (offer) {
         return offer.id === id;
       });
