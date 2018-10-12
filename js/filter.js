@@ -33,11 +33,11 @@
   }
 
   function compareRooms(offer, filter) {
-    return offer.rooms === Number(filter.rooms) || filter.rooms === 'any';
+    return offer.rooms === parseInt(filter.rooms, 10) || filter.rooms === 'any';
   }
 
   function compareGuests(offer, filter) {
-    return offer.guests === Number(filter.guests) || filter.guests === 'any';
+    return offer.guests === parseInt(filter.guests, 10) || filter.guests === 'any';
   }
 
   function compareFeatures(offer, filter) {

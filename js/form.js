@@ -13,6 +13,8 @@
   var submit = adForm.querySelector('.ad-form__submit');
   var fields = adForm.querySelectorAll('fieldset > input, select');
   var resetButton = adForm.querySelector('.ad-form__reset');
+  var fileChooser = adForm.querySelector('#avatar');
+  var imagesChooser = adForm.querySelector('#images');
   var PriceOfType = {
     'bungalo': 0,
     'flat': 1000,
@@ -31,6 +33,18 @@
   selectType.addEventListener('change', onSelectTypeChange);
   resetButton.addEventListener('click', onResetClick);
   selectRoom.addEventListener('change', onSelectRoomChange);
+  fileChooser.addEventListener('change', onInputAvatarChange);
+  imagesChooser.addEventListener('change', onInputImagesChange);
+
+  function onInputImagesChange() {
+    var files = imagesChooser.files;
+    window.review.showImages(files);
+  }
+
+  function onInputAvatarChange() {
+    var file = fileChooser.files[0];
+    window.review.showAvatar(file);
+  }
 
   function onFormSubmit(evt) {
     window.backend.upLoadForm(new FormData(adForm), function () {
@@ -77,13 +91,13 @@
   }
 
   function checkCapacity() {
-    var capacity = Number(selectCapacity.value);
-    var roomNumber = Number(selectRoom.value);
+    var capacity = parseInt(selectCapacity.value, 10);
+    var roomNumber = parseInt(selectRoom.value, 10);
     var message = null;
     if (roomNumber !== 100 && (capacity > roomNumber || capacity < 1)) {
       message = 'Количество гостей НЕ должно быть больше ' + roomNumber + ' и меньше 1';
     } else if (roomNumber === 100 && capacity !== 0) {
-      message = 'Поставьте пункт \<не для гостей\> в поле <Количество мест>';
+      message = 'Поставьте пункт <не для гостей> в поле <Количество мест>';
     } else {
       message = '';
     }
@@ -134,6 +148,8 @@
     adForm.reset();
     adForm.classList.add('ad-form--disabled');
     window.filter.disable();
+    window.review.removeAvatar();
+    window.review.removeImages();
     changeAvailabilityFields();
   }
 
